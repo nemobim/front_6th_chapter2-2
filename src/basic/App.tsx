@@ -7,6 +7,7 @@ import Header from "./components/layout/Header";
 import Toast from "./components/elements/Toast";
 
 const App = () => {
+  // 🔄 useProduct 훅으로 분리 가능한 상품 관련 상태
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
     const saved = localStorage.getItem("products");
     if (saved) {
@@ -19,6 +20,7 @@ const App = () => {
     return initialProducts;
   });
 
+  // 🛒 useCart 훅으로 분리 가능한 장바구니 관련 상태
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem("cart");
     if (saved) {
@@ -31,6 +33,7 @@ const App = () => {
     return [];
   });
 
+  // 🎫 useCoupon 훅으로 분리 가능한 쿠폰 관련 상태
   const [coupons, setCoupons] = useState<Coupon[]>(() => {
     const saved = localStorage.getItem("coupons");
     if (saved) {
@@ -69,6 +72,7 @@ const App = () => {
     discountValue: 0,
   });
 
+  // 💲 가격 포맷팅 - formatPrice 유틸리티 함수로 분리
   const formatPrice = (price: number, productId?: string): string => {
     if (productId) {
       const product = products.find((p) => p.id === productId);
@@ -84,6 +88,7 @@ const App = () => {
     return `₩${price.toLocaleString()}`;
   };
 
+  // 🏷️ 할인 계산 - calculateDiscount 유틸리티 함수로 분리
   const getMaxApplicableDiscount = (item: CartItem): number => {
     const { discounts } = item.product;
     const { quantity } = item;
@@ -100,6 +105,7 @@ const App = () => {
     return baseDiscount;
   };
 
+  // 🧮 개별 상품 총액 계산 - calculateItemTotal 유틸리티 함수로 분리
   const calculateItemTotal = (item: CartItem): number => {
     const { price } = item.product;
     const { quantity } = item;
@@ -108,6 +114,7 @@ const App = () => {
     return Math.round(price * quantity * (1 - discount));
   };
 
+  // 🧮 장바구니 총액 계산 - calculateCartTotal 유틸리티 함수로 분리
   const calculateCartTotal = (): {
     totalBeforeDiscount: number;
     totalAfterDiscount: number;
@@ -135,6 +142,7 @@ const App = () => {
     };
   };
 
+  // 📦 재고 계산 - getRemainingStock 유틸리티 함수로 분리
   const getRemainingStock = (product: Product): number => {
     const cartItem = cart.find((item) => item.product.id === product.id);
     const remaining = product.stock - (cartItem?.quantity || 0);
@@ -142,6 +150,7 @@ const App = () => {
     return remaining;
   };
 
+  // 🔔 알림 관리 - useNotification 훅으로 분리 가능
   const addNotification = useCallback((message: string, type: "error" | "success" | "warning" = "success") => {
     const id = Date.now().toString();
     setNotifications((prev) => [...prev, { id, message, type }]);
@@ -158,6 +167,7 @@ const App = () => {
     setTotalItemCount(count);
   }, [cart]);
 
+  // 💾 localStorage 동기화 - useLocalStorage 훅으로 분리
   useEffect(() => {
     localStorage.setItem("products", JSON.stringify(products));
   }, [products]);
@@ -174,12 +184,17 @@ const App = () => {
     }
   }, [cart]);
 
+  // 🔍 검색 디바운스 - useDebounce 훅으로 분리 가능
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 500);
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  // ============================================================================
+  // 🛒 4. 장바구니 관련 액션들 - useCart 훅으로 분리 가능
+  // ============================================================================
 
   const addToCart = useCallback(
     (product: ProductWithUI) => {
@@ -236,6 +251,10 @@ const App = () => {
     [products, removeFromCart, addNotification, getRemainingStock]
   );
 
+  // ============================================================================
+  // 🎫 5. 쿠폰 관련 액션들 - useCoupon 훅으로 분리 가능
+  // ============================================================================
+
   const applyCoupon = useCallback(
     (coupon: Coupon) => {
       const currentTotal = calculateCartTotal().totalAfterDiscount;
@@ -257,6 +276,10 @@ const App = () => {
     setCart([]);
     setSelectedCoupon(null);
   }, [addNotification]);
+
+  // ============================================================================
+  // 🎫 5. 쿠폰 관련 액션들 - useCoupon 훅으로 분리 가능
+  // ============================================================================
 
   const addProduct = useCallback(
     (newProduct: Omit<ProductWithUI, "id">) => {
@@ -310,6 +333,11 @@ const App = () => {
     [selectedCoupon, addNotification]
   );
 
+  // ============================================================================
+  // 📝 7. 폼 핸들러들 - 각각의 폼 컴포넌트로 분리 가능
+  // ============================================================================
+
+  // 📝 ProductForm 컴포넌트로 분리 가능
   const handleProductSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingProduct && editingProduct !== "new") {
@@ -326,6 +354,7 @@ const App = () => {
     setShowProductForm(false);
   };
 
+  // 📝 CouponForm 컴포넌트로 분리 가능
   const handleCouponSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addCoupon(couponForm);
@@ -350,6 +379,10 @@ const App = () => {
     setShowProductForm(true);
   };
 
+  // ============================================================================
+  // 🧮 8. 계산된 값들
+  // ============================================================================
+
   const totals = calculateCartTotal();
 
   const filteredProducts = debouncedSearchTerm
@@ -358,6 +391,10 @@ const App = () => {
       )
     : products;
 
+  // ============================================================================
+  // 🎨 9. 렌더링 - 각각의 페이지/컴포넌트로 분리 가능
+  // ============================================================================
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Toast notifications={notifications} setNotifications={setNotifications} />
@@ -365,10 +402,13 @@ const App = () => {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <div className="max-w-6xl mx-auto">
+            {/* 📊 관리자 대시보드 헤더 - AdminDashboardHeader 컴포넌트로 분리 */}
             <div className="mb-8">
               <h1 className="text-2xl font-bold text-gray-900">관리자 대시보드</h1>
               <p className="text-gray-600 mt-1">상품과 쿠폰을 관리할 수 있습니다</p>
             </div>
+
+            {/* 🗂️ 탭 네비게이션 - AdminTabNavigation 컴포넌트로 분리 */}
             <div className="border-b border-gray-200 mb-6">
               <nav className="-mb-px flex space-x-8">
                 <button
@@ -390,6 +430,7 @@ const App = () => {
               </nav>
             </div>
 
+            {/* 📦 상품 관리 탭 - AdminProductTab 컴포넌트로 분리 */}
             {activeTab === "products" ? (
               <section className="bg-white rounded-lg border border-gray-200">
                 <div className="p-6 border-b border-gray-200">
@@ -408,6 +449,7 @@ const App = () => {
                   </div>
                 </div>
 
+                {/* 📊 상품 테이블 - ProductTable 컴포넌트로 분리 */}
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-200">
@@ -420,6 +462,7 @@ const App = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
+                      {/* 📋 상품 행들 - ProductRow 컴포넌트로 분리 */}
                       {(activeTab === "products" ? products : products).map((product) => (
                         <tr key={product.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
@@ -447,6 +490,7 @@ const App = () => {
                     </tbody>
                   </table>
                 </div>
+                {/* 📝 상품 폼 - ProductForm 컴포넌트로 분리 */}
                 {showProductForm && (
                   <div className="p-6 border-t border-gray-200 bg-gray-50">
                     <form onSubmit={handleProductSubmit} className="space-y-4">
@@ -608,11 +652,14 @@ const App = () => {
               </section>
             ) : (
               <section className="bg-white rounded-lg border border-gray-200">
+                {/* 🎫 쿠폰 관리 탭 - AdminCouponTab 컴포넌트로 분리 */}
                 <div className="p-6 border-b border-gray-200">
                   <h2 className="text-lg font-semibold">쿠폰 관리</h2>
                 </div>
                 <div className="p-6">
+                  {/* 🎫 쿠폰 그리드 - CouponGrid 컴포넌트로 분리 */}
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {/* 🎫 쿠폰 카드들 - CouponCard 컴포넌트로 분리 */}
                     {coupons.map((coupon) => (
                       <div key={coupon.code} className="relative bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
                         <div className="flex justify-between items-start">
@@ -639,6 +686,7 @@ const App = () => {
                       </div>
                     ))}
 
+                    {/* ➕ 새 쿠폰 추가 버튼 */}
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center hover:border-gray-400 transition-colors">
                       <button onClick={() => setShowCouponForm(!showCouponForm)} className="text-gray-400 hover:text-gray-600 flex flex-col items-center">
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -649,6 +697,7 @@ const App = () => {
                     </div>
                   </div>
 
+                  {/* 📝 쿠폰 폼 - CouponForm 컴포넌트로 분리 */}
                   {showCouponForm && (
                     <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                       <form onSubmit={handleCouponSubmit} className="space-y-4">
@@ -744,8 +793,9 @@ const App = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* 🛒 고객 페이지 - CustomerPage 컴포넌트로 분리 가능 */}
             <div className="lg:col-span-3">
-              {/* 상품 목록 */}
+              {/* 📊 상품 목록 헤더 - ProductListHeader 컴포넌트로 분리 */}
               <section>
                 <div className="mb-6 flex justify-between items-center">
                   <h2 className="text-2xl font-semibold text-gray-800">전체 상품</h2>
@@ -757,6 +807,7 @@ const App = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* 🔍 검색 결과 또는 상품 그리드 */}
                     {filteredProducts.map((product) => {
                       const remainingStock = getRemainingStock(product);
 
@@ -819,9 +870,10 @@ const App = () => {
                 )}
               </section>
             </div>
-
+            {/* 🛒 사이드바 영역 - CartSidebar 컴포넌트로 분리 */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-4">
+                {/* 🛒 장바구니 섹션 - CartSection 컴포넌트로 분리  */}
                 <section className="bg-white rounded-lg border border-gray-200 p-4">
                   <h2 className="text-lg font-semibold mb-4 flex items-center">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -831,6 +883,7 @@ const App = () => {
                   </h2>
                   {cart.length === 0 ? (
                     <div className="text-center py-8">
+                      {/* 📭 빈 장바구니 - EmptyCart 컴포넌트로 분리 */}
                       <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                       </svg>
@@ -884,6 +937,7 @@ const App = () => {
 
                 {cart.length > 0 && (
                   <>
+                    {/* 🎫 쿠폰 섹션 - CouponSection 컴포넌트로 분리 */}
                     <section className="bg-white rounded-lg border border-gray-200 p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-semibold text-gray-700">쿠폰 할인</h3>
@@ -909,6 +963,7 @@ const App = () => {
                       )}
                     </section>
 
+                    {/* 💳 결제 정보 섹션 - PaymentSection 컴포넌트로 분리 */}
                     <section className="bg-white rounded-lg border border-gray-200 p-4">
                       <h3 className="text-lg font-semibold mb-4">결제 정보</h3>
                       <div className="space-y-2 text-sm">
@@ -928,6 +983,7 @@ const App = () => {
                         </div>
                       </div>
 
+                      {/* 💳 결제 버튼 - CheckoutButton 컴포넌트로 분리 */}
                       <button onClick={completeOrder} className="w-full mt-4 py-3 bg-yellow-400 text-gray-900 rounded-md font-medium hover:bg-yellow-500 transition-colors">
                         {totals.totalAfterDiscount.toLocaleString()}원 결제하기
                       </button>
