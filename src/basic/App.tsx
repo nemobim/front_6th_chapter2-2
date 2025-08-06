@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import AdminNavigation from "./components/admin/AdminNavigation";
 import CouponManager from "./components/admin/CouponManager";
 import ProductManager from "./components/admin/ProductManager";
@@ -9,6 +9,7 @@ import { useCoupon } from "./hooks/useCoupon";
 import { NotificationProvider } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
 import { useSearch } from "./hooks/useSearch";
+import { useProductForm } from "./hooks/useProductForm";
 import { CustomerPage } from "./pages/CustomerPage";
 
 // 메인 앱 컴포넌트 (NotificationProvider 내부에서 실행)
@@ -23,7 +24,27 @@ const AppContent = () => {
   const { searchTerm, setSearchTerm, debouncedSearchTerm } = useSearch();
 
   /** 상품 hook 사용 */
-  const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit } = useProduct();
+  const { products, addProduct, updateProduct, deleteProduct } = useProduct();
+
+  /** 상품 폼 hook 사용 */
+  const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, startEditProduct, resetProductForm } = useProductForm();
+
+  /** 상품 등록 */
+  const handleProductSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+
+      const isEditMode = editingProduct && editingProduct !== "new";
+      if (isEditMode) {
+        updateProduct(editingProduct, productForm);
+      } else {
+        addProduct(productForm);
+      }
+
+      resetProductForm();
+    },
+    [editingProduct, productForm, updateProduct, addProduct, resetProductForm]
+  );
 
   /** 장바구니 hook 사용 */
   const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount, cartTotals, selectedCoupon, setSelectedCoupon } = useCart({ products });
