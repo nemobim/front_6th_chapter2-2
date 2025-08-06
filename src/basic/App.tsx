@@ -10,6 +10,7 @@ import { useDebounce } from "./hooks/useDebounce";
 import { useNotification } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
 import { useCartTotal } from "./hooks/useCartTotal";
+import { useProductFilter } from "./hooks/useProductFilter";
 
 const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -54,6 +55,9 @@ const App = () => {
   // 🧮 장바구니 총액 계산 훅 사용
   const totals = useCartTotal({ cart, selectedCoupon, calculateItemTotal });
 
+  // 🔍 상품 필터링 훅 사용
+  const filteredProducts = useProductFilter({ products, searchTerm: debouncedSearchTerm });
+
   const [totalItemCount, setTotalItemCount] = useState(0);
 
   useEffect(() => {
@@ -72,12 +76,6 @@ const App = () => {
     });
     setShowCouponForm(false);
   };
-
-  const filteredProducts = debouncedSearchTerm
-    ? products.filter(
-        (product) => product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) || (product.description && product.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
-      )
-    : products;
 
   return (
     <div className="min-h-screen bg-gray-50">
