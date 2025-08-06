@@ -39,12 +39,6 @@ const AppContent = () => {
     setSelectedCoupon,
   });
 
-  /** 상품 필터링 hook 사용 */
-  const filteredProducts = useProductFilter({
-    products,
-    searchTerm: debouncedSearchTerm,
-  });
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header isAdmin={isAdmin} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setIsAdmin={setIsAdmin} totalItemCount={totalItemCount} />
@@ -82,7 +76,6 @@ const AppContent = () => {
           <CustomerPage
             products={products}
             cart={cart}
-            filteredProducts={filteredProducts}
             debouncedSearchTerm={debouncedSearchTerm}
             addToCart={addToCart}
             removeFromCart={removeFromCart}

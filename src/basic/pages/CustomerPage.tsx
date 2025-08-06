@@ -1,10 +1,10 @@
 import { ProductWithUI } from "../types/product";
 import { CartItem } from "../../types";
+import { useProductFilter } from "../hooks/useProductFilter";
 
 interface CustomerPageProps {
   products: ProductWithUI[];
   cart: CartItem[];
-  filteredProducts: ProductWithUI[];
   debouncedSearchTerm: string;
   addToCart: (product: ProductWithUI) => void;
   removeFromCart: (productId: string) => void;
@@ -23,7 +23,6 @@ interface CustomerPageProps {
 export const CustomerPage = ({
   products,
   cart,
-  filteredProducts,
   debouncedSearchTerm,
   addToCart,
   removeFromCart,
@@ -38,6 +37,12 @@ export const CustomerPage = ({
   completeOrder,
   totals,
 }: CustomerPageProps) => {
+  /** 상품 필터링 hook 사용 */
+  const filteredProducts = useProductFilter({
+    products,
+    searchTerm: debouncedSearchTerm,
+  });
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-3">
