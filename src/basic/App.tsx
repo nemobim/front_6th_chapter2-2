@@ -4,43 +4,18 @@ import CouponManager from "./components/admin/CouponManager";
 import ProductManager from "./components/admin/ProductManager";
 import Toast from "./components/elements/Toast";
 import Header from "./components/layout/Header";
-import { initialProducts } from "./constants/data";
 import { useCart } from "./hooks/useCart";
 import { useCoupon } from "./hooks/useCoupon";
+import { useProduct } from "./hooks/useProduct";
 import { Notification } from "./types";
-import { NewProductForm, ProductWithUI } from "./types/product";
 
 const App = () => {
-  // 🔄 useProduct 훅으로 분리 가능한 상품 관련 상태
-  const [products, setProducts] = useState<ProductWithUI[]>(() => {
-    const saved = localStorage.getItem("products");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return initialProducts;
-      }
-    }
-    return initialProducts;
-  });
-
   const [isAdmin, setIsAdmin] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showCouponForm, setShowCouponForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "coupons">("products");
-  const [showProductForm, setShowProductForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-
-  // Admin
-  const [editingProduct, setEditingProduct] = useState<string | null>(null);
-  const [productForm, setProductForm] = useState<NewProductForm>({
-    name: "",
-    price: 0,
-    stock: 0,
-    description: "",
-    discounts: [] as Array<{ quantity: number; rate: number }>,
-  });
 
   const [couponForm, setCouponForm] = useState({
     name: "",
@@ -59,24 +34,12 @@ const App = () => {
     }, 3000);
   }, []);
 
+  // 🛍️ 상품 훅 사용
+  const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit, formatPrice } =
+    useProduct({ addNotification, isAdmin });
+
   // 🛒 장바구니 훅 사용
   const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal } = useCart({ products, addNotification });
-
-  // 💲 가격 포맷팅 - formatPrice 유틸리티 함수로 분리
-  const formatPrice = (price: number, productId?: string): string => {
-    if (productId) {
-      const product = products.find((p) => p.id === productId);
-      if (product && getRemainingStock(product) <= 0) {
-        return "SOLD OUT";
-      }
-    }
-
-    if (isAdmin) {
-      return `${price.toLocaleString()}원`;
-    }
-
-    return `₩${price.toLocaleString()}`;
-  };
 
   // 🧮 장바구니 총액 계산 - calculateCartTotal 유틸리티 함수로 분리
   const calculateCartTotal = (): {
@@ -113,19 +76,6 @@ const App = () => {
     setTotalItemCount(count);
   }, [cart]);
 
-  // 💾 localStorage 동기화 - useLocalStorage 훅으로 분리
-  useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
-  }, [products]);
-
-  useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    } else {
-      localStorage.removeItem("cart");
-    }
-  }, [cart]);
-
   // 🔍 검색 디바운스 - useDebounce 훅으로 분리 가능
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -141,60 +91,6 @@ const App = () => {
     setCart,
   });
 
-  // ============================================================================
-  // 🎫 5. 쿠폰 관련 액션들 - useCoupon 훅으로 분리 가능
-  // ============================================================================
-
-  const addProduct = useCallback(
-    (newProduct: Omit<ProductWithUI, "id">) => {
-      const product: ProductWithUI = {
-        ...newProduct,
-        id: `p${Date.now()}`,
-      };
-      setProducts((prev) => [...prev, product]);
-      addNotification("상품이 추가되었습니다.", "success");
-    },
-    [addNotification]
-  );
-
-  const updateProduct = useCallback(
-    (productId: string, updates: Partial<ProductWithUI>) => {
-      setProducts((prev) => prev.map((product) => (product.id === productId ? { ...product, ...updates } : product)));
-      addNotification("상품이 수정되었습니다.", "success");
-    },
-    [addNotification]
-  );
-
-  const deleteProduct = useCallback(
-    (productId: string) => {
-      setProducts((prev) => prev.filter((p) => p.id !== productId));
-      addNotification("상품이 삭제되었습니다.", "success");
-    },
-    [addNotification]
-  );
-
-  // ============================================================================
-  // 📝 7. 폼 핸들러들 - 각각의 폼 컴포넌트로 분리 가능
-  // ============================================================================
-
-  // 📝 ProductForm 컴포넌트로 분리 가능
-  const handleProductSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingProduct && editingProduct !== "new") {
-      updateProduct(editingProduct, productForm);
-      setEditingProduct(null);
-    } else {
-      addProduct({
-        ...productForm,
-        discounts: productForm.discounts,
-      });
-    }
-    setProductForm({ name: "", price: 0, stock: 0, description: "", discounts: [] });
-    setEditingProduct(null);
-    setShowProductForm(false);
-  };
-
-  // 📝 CouponForm 컴포넌트로 분리 가능
   const handleCouponSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addCoupon(couponForm);
@@ -207,22 +103,6 @@ const App = () => {
     setShowCouponForm(false);
   };
 
-  const startEditProduct = (product: ProductWithUI) => {
-    setEditingProduct(product.id);
-    setProductForm({
-      name: product.name,
-      price: product.price,
-      stock: product.stock,
-      description: product.description || "",
-      discounts: product.discounts || [],
-    });
-    setShowProductForm(true);
-  };
-
-  // ============================================================================
-  // 🧮 8. 계산된 값들
-  // ============================================================================
-
   const totals = calculateCartTotal();
 
   const filteredProducts = debouncedSearchTerm
@@ -230,10 +110,6 @@ const App = () => {
         (product) => product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) || (product.description && product.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
       )
     : products;
-
-  // ============================================================================
-  // 🎨 9. 렌더링 - 각각의 페이지/컴포넌트로 분리 가능
-  // ============================================================================
 
   return (
     <div className="min-h-screen bg-gray-50">
