@@ -1,13 +1,14 @@
 import { useState, useCallback, useEffect } from "react";
 import { CartItem, Product } from "../../types";
 import { ProductWithUI } from "../types/product";
+import { useNotification } from "./useNotification";
 
 interface UseCartProps {
   products: ProductWithUI[];
-  addNotification: (message: string, type: "error" | "success" | "warning") => void;
 }
 
-export const useCart = ({ products, addNotification }: UseCartProps) => {
+export const useCart = ({ products }: UseCartProps) => {
+  const { addNotification } = useNotification();
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem("cart");
     if (saved) {

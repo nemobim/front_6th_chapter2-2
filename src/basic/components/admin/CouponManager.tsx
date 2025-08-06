@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Coupon } from "../../../types";
+import { useNotification } from "../../hooks/useNotification";
 
 interface ICouponManagementTableProps {
   coupons: Coupon[];
@@ -21,10 +22,10 @@ interface ICouponManagementTableProps {
   >;
   handleCouponSubmit: (e: React.FormEvent) => void;
   deleteCoupon: (couponCode: string) => void;
-  addNotification: (message: string, type: "error" | "success" | "warning") => void;
 }
 
-const CouponManager = ({ coupons, showCouponForm, setShowCouponForm, couponForm, setCouponForm, handleCouponSubmit, deleteCoupon, addNotification }: ICouponManagementTableProps) => {
+const CouponManager = ({ coupons, showCouponForm, setShowCouponForm, couponForm, setCouponForm, handleCouponSubmit, deleteCoupon }: ICouponManagementTableProps) => {
+  const { addNotification } = useNotification();
   return (
     <section className="bg-white rounded-lg border border-gray-200">
       {/* 🎫 쿠폰 관리 탭 - AdminCouponTab 컴포넌트로 분리 */}

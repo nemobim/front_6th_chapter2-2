@@ -2,11 +2,10 @@ import { useState } from "react";
 import AdminNavigation from "./components/admin/AdminNavigation";
 import CouponManager from "./components/admin/CouponManager";
 import ProductManager from "./components/admin/ProductManager";
-import Toast from "./components/elements/Toast";
 import Header from "./components/layout/Header";
 import { useCart } from "./hooks/useCart";
 import { useCoupon } from "./hooks/useCoupon";
-import { useNotification } from "./hooks/useNotification";
+import { NotificationProvider } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
 import { useCartTotal } from "./hooks/useCartTotal";
 import { useProductFilter } from "./hooks/useProductFilter";
@@ -15,7 +14,8 @@ import { CustomerPage } from "./pages/CustomerPage";
 import { TActiveTab } from "./constants/adminConstants";
 import { useSearch } from "./hooks/useSearch";
 
-const App = () => {
+// 메인 앱 컴포넌트 (NotificationProvider 내부에서 실행)
+const AppContent = () => {
   /** 관리자 상태 여부 */
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -25,56 +25,28 @@ const App = () => {
   /** 검색어 설정 */
   const { searchTerm, setSearchTerm, debouncedSearchTerm } = useSearch();
 
-  // 🔔 알림 관리 훅 사용
-  const { notifications, setNotifications, addNotification } = useNotification();
-
   // 🎫 쿠폰 폼 훅 사용
   const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, resetCouponForm } = useCouponForm();
 
   // 🛍️ 상품 훅 사용
-  const {
-    products,
-    editingProduct,
-    setEditingProduct,
-    showProductForm,
-    setShowProductForm,
-    productForm,
-    setProductForm,
-    deleteProduct,
-    startEditProduct,
-    handleProductSubmit,
-    formatPrice,
-  } = useProduct({ addNotification, isAdmin });
+  const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit, formatPrice } =
+    useProduct({ isAdmin });
 
   // 🛒 장바구니 훅 사용
-  const {
-    cart,
-    setCart,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    getRemainingStock,
-    calculateItemTotal,
-    totalItemCount,
-  } = useCart({ products, addNotification });
+  const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
 
   // 🧮 장바구니 총액 계산 훅 사용
   const calculateCartTotal = () => {
     const totalBeforeDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-    const totalAfterDiscount = cart.reduce(
-      (sum, item) => sum + item.product.price * item.quantity * (1 - item.product.discounts[0]?.rate || 0),
-      0
-    );
+    const totalAfterDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity * (1 - item.product.discounts[0]?.rate || 0), 0);
     return { totalBeforeDiscount, totalAfterDiscount };
   };
 
   // 🎫 쿠폰 훅 사용
-  const { coupons, selectedCoupon, setSelectedCoupon, applyCoupon, completeOrder, addCoupon, deleteCoupon } =
-    useCoupon({
-      addNotification,
-      calculateCartTotal,
-      setCart,
-    });
+  const { coupons, selectedCoupon, setSelectedCoupon, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
+    calculateCartTotal,
+    setCart,
+  });
 
   // 🧮 장바구니 총액 계산 훅 사용
   const totals = useCartTotal({ cart, selectedCoupon, calculateItemTotal });
@@ -94,14 +66,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Toast notifications={notifications} setNotifications={setNotifications} />
-      <Header
-        isAdmin={isAdmin}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        setIsAdmin={setIsAdmin}
-        totalItemCount={totalItemCount}
-      />
+      <Header isAdmin={isAdmin} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setIsAdmin={setIsAdmin} totalItemCount={totalItemCount} />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <div className="max-w-6xl mx-auto">
@@ -127,7 +92,6 @@ const App = () => {
                 formatPrice={formatPrice}
                 startEditProduct={startEditProduct}
                 deleteProduct={deleteProduct}
-                addNotification={addNotification}
               />
             ) : (
               <CouponManager
@@ -138,7 +102,6 @@ const App = () => {
                 setCouponForm={setCouponForm}
                 handleCouponSubmit={handleCouponSubmit}
                 deleteCoupon={deleteCoupon}
-                addNotification={addNotification}
               />
             )}
           </div>
@@ -148,24 +111,31 @@ const App = () => {
             cart={cart}
             filteredProducts={filteredProducts}
             debouncedSearchTerm={debouncedSearchTerm}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
             addToCart={addToCart}
             removeFromCart={removeFromCart}
             updateQuantity={updateQuantity}
             getRemainingStock={getRemainingStock}
-            formatPrice={formatPrice}
             calculateItemTotal={calculateItemTotal}
+            totals={totals}
             coupons={coupons}
             selectedCoupon={selectedCoupon}
-            applyCoupon={applyCoupon}
             setSelectedCoupon={setSelectedCoupon}
+            applyCoupon={applyCoupon}
             completeOrder={completeOrder}
-            totals={totals}
+            formatPrice={formatPrice}
           />
         )}
       </main>
     </div>
+  );
+};
+
+// 루트 앱 컴포넌트 (Provider로 감싸기)
+const App = () => {
+  return (
+    <NotificationProvider>
+      <AppContent />
+    </NotificationProvider>
   );
 };
 

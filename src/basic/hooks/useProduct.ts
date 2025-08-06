@@ -1,13 +1,14 @@
 import { useState, useCallback, useEffect } from "react";
 import { NewProductForm, ProductWithUI } from "../types/product";
 import { initialProducts } from "../constants/data";
+import { useNotification } from "./useNotification";
 
 interface UseProductProps {
-  addNotification: (message: string, type: "error" | "success" | "warning") => void;
   isAdmin: boolean;
 }
 
-export const useProduct = ({ addNotification, isAdmin }: UseProductProps) => {
+export const useProduct = ({ isAdmin }: UseProductProps) => {
+  const { addNotification } = useNotification();
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
     const saved = localStorage.getItem("products");
     if (saved) {

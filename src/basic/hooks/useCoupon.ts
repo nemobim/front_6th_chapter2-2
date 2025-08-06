@@ -1,14 +1,15 @@
 import { useState, useCallback, useEffect } from "react";
 import { Coupon } from "../../types";
 import { initialCoupons } from "../constants/data";
+import { useNotification } from "./useNotification";
 
 interface UseCouponProps {
-  addNotification: (message: string, type: "error" | "success" | "warning") => void;
   calculateCartTotal: () => { totalBeforeDiscount: number; totalAfterDiscount: number };
   setCart: (cart: any[]) => void;
 }
 
-export const useCoupon = ({ addNotification, calculateCartTotal, setCart }: UseCouponProps) => {
+export const useCoupon = ({ calculateCartTotal, setCart }: UseCouponProps) => {
+  const { addNotification } = useNotification();
   const [coupons, setCoupons] = useState<Coupon[]>(() => {
     const saved = localStorage.getItem("coupons");
     if (saved) {

@@ -1,4 +1,5 @@
 import { TActiveTab } from "../../constants/adminConstants";
+import { useNotification } from "../../hooks/useNotification";
 import { NewProductForm, ProductWithUI } from "../../types/product";
 import { Dispatch, SetStateAction } from "react";
 
@@ -15,7 +16,6 @@ interface IProductManagementTableProps {
   productForm: NewProductForm;
   editingProduct: string | null;
   showProductForm: boolean;
-  addNotification: (message: string, type: "error" | "success" | "warning") => void;
 }
 
 const ProductManager = ({
@@ -31,8 +31,8 @@ const ProductManager = ({
   productForm,
   editingProduct,
   showProductForm,
-  addNotification,
 }: IProductManagementTableProps) => {
+  const { addNotification } = useNotification();
   return (
     <section className="bg-white rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200">
