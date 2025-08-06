@@ -2,35 +2,38 @@ import { TActiveTab } from "../../constants/adminConstants";
 import { useNotification } from "../../hooks/useNotification";
 import { NewProductForm, ProductWithUI } from "../../types/product";
 import { Dispatch, SetStateAction } from "react";
+import { formatPrice } from "../../utils/productUtils";
 
 interface IProductManagementTableProps {
+  isAdmin: boolean;
   products: ProductWithUI[];
   activeTab: TActiveTab;
   setEditingProduct: Dispatch<SetStateAction<string | null>>;
   setProductForm: Dispatch<SetStateAction<NewProductForm>>;
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
-  formatPrice: (price: number, id: string) => string;
   startEditProduct: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
   handleProductSubmit: (e: React.FormEvent) => void;
   productForm: NewProductForm;
   editingProduct: string | null;
   showProductForm: boolean;
+  getRemainingStock: (product: ProductWithUI) => number;
 }
 
 const ProductManager = ({
+  isAdmin,
   products,
   activeTab,
   setEditingProduct,
   setProductForm,
   setShowProductForm,
-  formatPrice,
   startEditProduct,
   deleteProduct,
   handleProductSubmit,
   productForm,
   editingProduct,
   showProductForm,
+  getRemainingStock,
 }: IProductManagementTableProps) => {
   const { showToast } = useNotification();
   return (
@@ -68,7 +71,7 @@ const ProductManager = ({
             {(activeTab === "products" ? products : products).map((product) => (
               <tr key={product.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPrice(product.price, product.id)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatPrice(product.price, isAdmin, { productId: product.id, products, getRemainingStock })}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

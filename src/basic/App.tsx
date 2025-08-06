@@ -23,8 +23,7 @@ const AppContent = () => {
   const { searchTerm, setSearchTerm, debouncedSearchTerm } = useSearch();
 
   /** 상품 hook 사용 */
-  const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit, formatPrice } =
-    useProduct({ isAdmin });
+  const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit } = useProduct();
 
   /** 장바구니 hook 사용 */
   const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount, cartTotals, selectedCoupon, setSelectedCoupon } = useCart({ products });
@@ -54,6 +53,7 @@ const AppContent = () => {
             {activeTab === "products" ? (
               <ProductManager
                 products={products}
+                isAdmin={isAdmin}
                 activeTab={activeTab}
                 handleProductSubmit={handleProductSubmit}
                 productForm={productForm}
@@ -62,9 +62,9 @@ const AppContent = () => {
                 setEditingProduct={setEditingProduct}
                 setProductForm={setProductForm}
                 setShowProductForm={setShowProductForm}
-                formatPrice={formatPrice}
                 startEditProduct={startEditProduct}
                 deleteProduct={deleteProduct}
+                getRemainingStock={getRemainingStock}
               />
             ) : (
               <CouponManager coupons={coupons} deleteCoupon={deleteCoupon} addCoupon={addCoupon} />
@@ -72,6 +72,7 @@ const AppContent = () => {
           </div>
         ) : (
           <CustomerPage
+            isAdmin={isAdmin}
             products={products}
             cart={cart}
             debouncedSearchTerm={debouncedSearchTerm}
@@ -86,7 +87,6 @@ const AppContent = () => {
             setSelectedCoupon={setSelectedCoupon}
             applyCoupon={applyCoupon}
             completeOrder={completeOrder}
-            formatPrice={formatPrice}
           />
         )}
       </main>

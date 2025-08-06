@@ -7,21 +7,33 @@ export const calculateRemainingStock = (product: Product, cart: CartItem[]): num
   return remaining;
 };
 
-/** 장바구니 아이템에 적용 가능한 최대 할인율을 계산 */
-export const calculateMaxApplicableDiscount = (item: CartItem, cart: CartItem[]): number => {
+/** 대량 구매 수량 */
+const BULK_PURCHASE_THRESHOLD = 10;
+/** 대량 구매 할인율 */
+const BULK_DISCOUNT_RATE = 0.05;
+/** 최대 할인율 */
+const MAX_DISCOUNT_RATE = 0.5;
+
+/** 대량 구매 여부 확인 */
+const checkBulkPurchase = (cart: CartItem[]): boolean => {
+  return cart.some((cartItem) => cartItem.quantity >= BULK_PURCHASE_THRESHOLD);
+};
+
+/** 기본 할인율 계산 */
+export const calculateBaseDiscount = (item: CartItem): number => {
   const { discounts } = item.product;
   const { quantity } = item;
-
-  const baseDiscount = discounts.reduce((maxDiscount, discount) => {
+  return discounts.reduce((maxDiscount, discount) => {
     return quantity >= discount.quantity && discount.rate > maxDiscount ? discount.rate : maxDiscount;
   }, 0);
+};
 
-  const hasBulkPurchase = cart.some((cartItem) => cartItem.quantity >= 10);
-  if (hasBulkPurchase) {
-    return Math.min(baseDiscount + 0.05, 0.5); // 대량 구매 시 추가 5% 할인
-  }
+/** 장바구니 구매 할인율 적용 */
+export const calculateMaxApplicableDiscount = (item: CartItem, cart: CartItem[]): number => {
+  const baseDiscount = calculateBaseDiscount(item); // 기본 할인율 계산
+  const bulkDiscount = checkBulkPurchase(cart) ? BULK_DISCOUNT_RATE : 0; // 대량 구매 할인율 계산
 
-  return baseDiscount;
+  return Math.min(baseDiscount + bulkDiscount, MAX_DISCOUNT_RATE); // 최대 할인율 적용
 };
 
 /** 장바구니 아이템의 총액을 계산 */

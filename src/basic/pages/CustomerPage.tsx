@@ -1,8 +1,10 @@
 import { ProductWithUI } from "../types/product";
 import { CartItem } from "../../types";
 import { useProductFilter } from "../hooks/useProductFilter";
+import { formatPrice } from "../utils/productUtils";
 
 interface CustomerPageProps {
+  isAdmin: boolean;
   products: ProductWithUI[];
   cart: CartItem[];
   debouncedSearchTerm: string;
@@ -10,7 +12,6 @@ interface CustomerPageProps {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   getRemainingStock: (product: ProductWithUI) => number;
-  formatPrice: (price: number, productId?: string) => string;
   calculateItemTotal: (item: CartItem) => number;
   coupons: any[];
   selectedCoupon: any;
@@ -21,6 +22,7 @@ interface CustomerPageProps {
 }
 
 export const CustomerPage = ({
+  isAdmin,
   products,
   cart,
   debouncedSearchTerm,
@@ -28,7 +30,6 @@ export const CustomerPage = ({
   removeFromCart,
   updateQuantity,
   getRemainingStock,
-  formatPrice,
   calculateItemTotal,
   coupons,
   selectedCoupon,
@@ -86,7 +87,7 @@ export const CustomerPage = ({
                       {product.description && <p className="text-sm text-gray-500 mb-2 line-clamp-2">{product.description}</p>}
                       {/* 가격 정보 */}
                       <div className="mb-3">
-                        <p className="text-lg font-bold text-gray-900">{formatPrice(product.price, product.id)}</p>
+                        <p className="text-lg font-bold text-gray-900">{formatPrice(product.price, isAdmin, { productId: product.id, products, getRemainingStock })}</p>
                         {product.discounts.length > 0 && (
                           <p className="text-xs text-gray-500">
                             {product.discounts[0].quantity}개 이상 구매시 할인 {product.discounts[0].rate * 100}%
