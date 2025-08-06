@@ -3,15 +3,13 @@ import AdminNavigation from "./components/admin/AdminNavigation";
 import CouponManager from "./components/admin/CouponManager";
 import ProductManager from "./components/admin/ProductManager";
 import Header from "./components/layout/Header";
+import { TActiveTab } from "./constants/adminConstants";
 import { useCart } from "./hooks/useCart";
 import { useCoupon } from "./hooks/useCoupon";
 import { NotificationProvider } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
-import { useProductFilter } from "./hooks/useProductFilter";
-import { useCouponForm } from "./hooks/useCouponForm";
-import { CustomerPage } from "./pages/CustomerPage";
-import { TActiveTab } from "./constants/adminConstants";
 import { useSearch } from "./hooks/useSearch";
+import { CustomerPage } from "./pages/CustomerPage";
 
 // 메인 앱 컴포넌트 (NotificationProvider 내부에서 실행)
 const AppContent = () => {

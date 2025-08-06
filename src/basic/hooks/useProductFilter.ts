@@ -10,7 +10,16 @@ export const useProductFilter = ({ products, searchTerm }: UseProductFilterProps
   const filteredProducts = useMemo(() => {
     if (!searchTerm) return products;
 
-    return products.filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()) || (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase())));
+    const searchValue = searchTerm.toLowerCase();
+
+    return products.filter((product) => {
+      // 상품명에 검색어가 포함되어 있는지 확인
+      const nameMatch = product.name.toLowerCase().includes(searchValue);
+      // 상품 설명에 검색어가 포함되어 있는지 확인 (설명이 없을 수 있음)
+      const descriptionMatch = product.description?.toLowerCase().includes(searchValue);
+
+      return nameMatch || descriptionMatch;
+    });
   }, [products, searchTerm]);
 
   return filteredProducts;
