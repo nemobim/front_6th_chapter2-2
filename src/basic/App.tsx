@@ -12,17 +12,10 @@ import { useProduct } from "./hooks/useProduct";
 import { useCartTotal } from "./hooks/useCartTotal";
 import { useProductFilter } from "./hooks/useProductFilter";
 import { useAdmin } from "./hooks/useAdmin";
+import { useCouponForm } from "./hooks/useCouponForm";
 
 const App = () => {
-  const [showCouponForm, setShowCouponForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const [couponForm, setCouponForm] = useState({
-    name: "",
-    code: "",
-    discountType: "amount" as "amount" | "percentage",
-    discountValue: 0,
-  });
 
   // 🔔 알림 관리 훅 사용
   const { notifications, setNotifications, addNotification } = useNotification();
@@ -32,6 +25,9 @@ const App = () => {
 
   // 👨‍💼 관리자 상태 훅 사용
   const { isAdmin, setIsAdmin, activeTab, setActiveTab } = useAdmin();
+
+  // 🎫 쿠폰 폼 훅 사용
+  const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, resetCouponForm } = useCouponForm();
 
   // 🛍️ 상품 훅 사용
   const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit, formatPrice } =
@@ -70,12 +66,7 @@ const App = () => {
   const handleCouponSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addCoupon(couponForm);
-    setCouponForm({
-      name: "",
-      code: "",
-      discountType: "amount",
-      discountValue: 0,
-    });
+    resetCouponForm();
     setShowCouponForm(false);
   };
 
