@@ -1,27 +1,23 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { CartItem } from "../../types";
 import { ProductWithUI } from "../types/product";
 import { useNotification } from "./useNotification";
 import { calculateRemainingStock, calculateItemTotal, calculateTotalItemCount } from "../utils/cartCalculations";
+import { loadDataFromStorage, removeDataFromStorage, saveDataToStorage } from "../utils/localStorageUtils";
+import { addItemToCart, removeItemFromCart, updateItemQuantity, validateStockAvailability, validateQuantity } from "../utils/cartUtils";
 
 interface UseCartProps {
   products: ProductWithUI[];
 }
 
 export const useCart = ({ products }: UseCartProps) => {
+  /** 알림 표시 */
   const { showToast } = useNotification();
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem("cart");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  });
 
+  /** 장바구니 상태 */
+  const [cart, setCart] = useState<CartItem[]>(loadDataFromStorage<CartItem[]>("cart", []));
+
+  /** 장바구니 총 아이템 수 */
   const [totalItemCount, setTotalItemCount] = useState(0);
 
   /** 재고 계산 */
@@ -40,63 +36,54 @@ export const useCart = ({ products }: UseCartProps) => {
     [cart]
   );
 
-  /** 장바구니 관련 액션들 */
+  /** 장바구니 추가 */
   const addToCart = useCallback(
     (product: ProductWithUI) => {
-      const remainingStock = getRemainingStock(product);
-      if (remainingStock <= 0) {
+      if (!validateStockAvailability(product, cart)) {
         showToast("재고가 부족합니다!", "error");
         return;
       }
 
       setCart((prevCart) => {
-        const existingItem = prevCart.find((item) => item.product.id === product.id);
+        const newCart = addItemToCart(prevCart, product);
 
-        if (existingItem) {
-          const newQuantity = existingItem.quantity + 1;
-
-          if (newQuantity > product.stock) {
-            showToast(`재고는 ${product.stock}개까지만 있습니다.`, "error");
-            return prevCart;
-          }
-
-          return prevCart.map((item) => (item.product.id === product.id ? { ...item, quantity: newQuantity } : item));
+        // 재고 초과 시 에러 메시지
+        if (newCart === prevCart) {
+          showToast(`재고는 ${product.stock}개까지만 있습니다.`, "error");
         }
 
-        return [...prevCart, { product, quantity: 1 }];
+        return newCart;
       });
 
       showToast("장바구니에 담았습니다", "success");
     },
-    [getRemainingStock, showToast]
+    [cart, showToast]
   );
 
+  /** 장바구니 삭제 */
   const removeFromCart = useCallback((productId: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.product.id !== productId));
+    setCart((prevCart) => removeItemFromCart(prevCart, productId));
   }, []);
 
-  const updateQuantity = useCallback(
+  /** 장바구니 수량 변경 */
+  const updateCartQuantity = useCallback(
     (productId: string, newQuantity: number) => {
-      if (newQuantity <= 0) {
-        removeFromCart(productId);
-        return;
-      }
-
+      // 상품 존재 여부 검증
       const product = products.find((p) => p.id === productId);
       if (!product) return;
 
-      const maxStock = product.stock;
-      if (newQuantity > maxStock) {
-        showToast(`재고는 ${maxStock}개까지만 있습니다.`, "error");
+      // 수량 유효성 검증
+      if (!validateQuantity(newQuantity, product.stock)) {
+        showToast(`재고는 ${product.stock}개까지만 있습니다.`, "error");
         return;
       }
 
-      setCart((prevCart) => prevCart.map((item) => (item.product.id === productId ? { ...item, quantity: newQuantity } : item)));
+      setCart((prevCart) => updateItemQuantity(prevCart, productId, newQuantity, product.stock));
     },
-    [products, removeFromCart, showToast]
+    [products, showToast]
   );
 
-  // 🧮 장바구니 아이템 카운트 계산
+  // 장바구니 아이템 카운트 계산
   useEffect(() => {
     const count = calculateTotalItemCount(cart);
     setTotalItemCount(count);
@@ -105,9 +92,9 @@ export const useCart = ({ products }: UseCartProps) => {
   // localStorage 동기화
   useEffect(() => {
     if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
+      saveDataToStorage("cart", cart);
     } else {
-      localStorage.removeItem("cart");
+      removeDataFromStorage("cart");
     }
   }, [cart]);
 
@@ -117,7 +104,7 @@ export const useCart = ({ products }: UseCartProps) => {
     totalItemCount,
     addToCart,
     removeFromCart,
-    updateQuantity,
+    updateCartQuantity,
     getRemainingStock,
     calculateItemTotal: calculateItemTotalForCart,
   };

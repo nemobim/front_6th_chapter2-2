@@ -52,7 +52,7 @@ const AppContent = () => {
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   /** 장바구니 hook 사용 */
-  const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
+  const { cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
 
   /** 장바구니 총액 계산 (할인 포함) */
   const cartTotals = useMemo(() => {
@@ -135,7 +135,7 @@ const AppContent = () => {
             debouncedSearchTerm={debouncedSearchTerm}
             addToCart={addToCart}
             removeFromCart={removeFromCart}
-            updateQuantity={updateQuantity}
+            updateCartQuantity={updateCartQuantity}
             getRemainingStock={getRemainingStock}
             calculateItemTotal={calculateItemTotal}
             totals={cartTotals}

@@ -10,7 +10,7 @@ interface CustomerPageProps {
   debouncedSearchTerm: string;
   addToCart: (product: ProductWithUI) => void;
   removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  updateCartQuantity: (productId: string, quantity: number) => void;
   getRemainingStock: (product: ProductWithUI) => number;
   calculateItemTotal: (item: CartItem) => number;
   coupons: any[];
@@ -28,7 +28,7 @@ export const CustomerPage = ({
   debouncedSearchTerm,
   addToCart,
   removeFromCart,
-  updateQuantity,
+  updateCartQuantity,
   getRemainingStock,
   calculateItemTotal,
   coupons,
@@ -157,14 +157,14 @@ export const CustomerPage = ({
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <button
-                            onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                            onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)}
                             className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100"
                           >
                             <span className="text-xs">−</span>
                           </button>
                           <span className="mx-3 text-sm font-medium w-8 text-center">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                            onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)}
                             className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100"
                           >
                             <span className="text-xs">+</span>
