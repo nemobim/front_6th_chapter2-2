@@ -20,6 +20,8 @@ export const useCart = ({ products, addNotification }: UseCartProps) => {
     return [];
   });
 
+  const [totalItemCount, setTotalItemCount] = useState(0);
+
   // 📦 재고 계산
   const getRemainingStock = (product: Product): number => {
     const cartItem = cart.find((item) => item.product.id === product.id);
@@ -109,7 +111,13 @@ export const useCart = ({ products, addNotification }: UseCartProps) => {
     [products, removeFromCart, addNotification]
   );
 
-  // �� localStorage 동기화
+  // 🧮 장바구니 아이템 카운트 계산
+  useEffect(() => {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    setTotalItemCount(count);
+  }, [cart]);
+
+  // localStorage 동기화
   useEffect(() => {
     if (cart.length > 0) {
       localStorage.setItem("cart", JSON.stringify(cart));
@@ -121,10 +129,12 @@ export const useCart = ({ products, addNotification }: UseCartProps) => {
   return {
     cart,
     setCart,
+    totalItemCount,
     addToCart,
     removeFromCart,
     updateQuantity,
     getRemainingStock,
+    getMaxApplicableDiscount,
     calculateItemTotal,
   };
 };

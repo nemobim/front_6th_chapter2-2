@@ -34,7 +34,7 @@ const App = () => {
     useProduct({ addNotification, isAdmin });
 
   // 🛒 장바구니 훅 사용
-  const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal } = useCart({ products, addNotification });
+  const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products, addNotification });
 
   // 🧮 장바구니 총액 계산 훅 사용
   const calculateCartTotal = () => {
@@ -55,13 +55,6 @@ const App = () => {
 
   // 🔍 상품 필터링 훅 사용
   const filteredProducts = useProductFilter({ products, searchTerm: debouncedSearchTerm });
-
-  const [totalItemCount, setTotalItemCount] = useState(0);
-
-  useEffect(() => {
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    setTotalItemCount(count);
-  }, [cart]);
 
   const handleCouponSubmit = (e: React.FormEvent) => {
     e.preventDefault();
