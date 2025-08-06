@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
-import { CartItem, Product } from "../../types";
+import { CartItem } from "../../types";
 import { ProductWithUI } from "../types/product";
 import { useNotification } from "./useNotification";
+import { calculateRemainingStock, calculateItemTotal, calculateTotalItemCount } from "../utils/cartCalculations";
 
 interface UseCartProps {
   products: ProductWithUI[];
@@ -24,37 +25,20 @@ export const useCart = ({ products }: UseCartProps) => {
   const [totalItemCount, setTotalItemCount] = useState(0);
 
   // 📦 재고 계산
-  const getRemainingStock = (product: Product): number => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    const remaining = product.stock - (cartItem?.quantity || 0);
-    return remaining;
-  };
-
-  // ��️ 할인 계산
-  const getMaxApplicableDiscount = (item: CartItem): number => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-
-    const baseDiscount = discounts.reduce((maxDiscount, discount) => {
-      return quantity >= discount.quantity && discount.rate > maxDiscount ? discount.rate : maxDiscount;
-    }, 0);
-
-    const hasBulkPurchase = cart.some((cartItem) => cartItem.quantity >= 10);
-    if (hasBulkPurchase) {
-      return Math.min(baseDiscount + 0.05, 0.5); // 대량 구매 시 추가 5% 할인
-    }
-
-    return baseDiscount;
-  };
+  const getRemainingStock = useCallback(
+    (product: ProductWithUI): number => {
+      return calculateRemainingStock(product, cart);
+    },
+    [cart]
+  );
 
   // 🧮 개별 상품 총액 계산
-  const calculateItemTotal = (item: CartItem): number => {
-    const { price } = item.product;
-    const { quantity } = item;
-    const discount = getMaxApplicableDiscount(item);
-
-    return Math.round(price * quantity * (1 - discount));
-  };
+  const calculateItemTotalForCart = useCallback(
+    (item: CartItem): number => {
+      return calculateItemTotal(item, cart);
+    },
+    [cart]
+  );
 
   // 🛒 장바구니 관련 액션들
   const addToCart = useCallback(
@@ -84,7 +68,7 @@ export const useCart = ({ products }: UseCartProps) => {
 
       addNotification("장바구니에 담았습니다", "success");
     },
-    [cart, addNotification, getRemainingStock]
+    [getRemainingStock, addNotification]
   );
 
   const removeFromCart = useCallback((productId: string) => {
@@ -114,7 +98,7 @@ export const useCart = ({ products }: UseCartProps) => {
 
   // 🧮 장바구니 아이템 카운트 계산
   useEffect(() => {
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const count = calculateTotalItemCount(cart);
     setTotalItemCount(count);
   }, [cart]);
 
@@ -135,7 +119,6 @@ export const useCart = ({ products }: UseCartProps) => {
     removeFromCart,
     updateQuantity,
     getRemainingStock,
-    getMaxApplicableDiscount,
-    calculateItemTotal,
+    calculateItemTotal: calculateItemTotalForCart,
   };
 };

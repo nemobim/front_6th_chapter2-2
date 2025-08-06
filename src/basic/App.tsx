@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import AdminNavigation from "./components/admin/AdminNavigation";
 import CouponManager from "./components/admin/CouponManager";
 import ProductManager from "./components/admin/ProductManager";
@@ -35,12 +35,12 @@ const AppContent = () => {
   // 🛒 장바구니 훅 사용
   const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
 
-  // 🧮 장바구니 총액 계산 훅 사용
-  const calculateCartTotal = () => {
+  // 🎫 장바구니 총액 계산 함수 분리
+  const calculateCartTotal = useCallback(() => {
     const totalBeforeDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-    const totalAfterDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity * (1 - item.product.discounts[0]?.rate || 0), 0);
+    const totalAfterDiscount = cart.reduce((sum, item) => sum + calculateItemTotal(item), 0);
     return { totalBeforeDiscount, totalAfterDiscount };
-  };
+  }, [cart, calculateItemTotal]);
 
   // 🎫 쿠폰 훅 사용
   const { coupons, selectedCoupon, setSelectedCoupon, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
