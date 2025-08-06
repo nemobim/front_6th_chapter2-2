@@ -9,6 +9,7 @@ import { useCoupon } from "./hooks/useCoupon";
 import { useDebounce } from "./hooks/useDebounce";
 import { useNotification } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
+import { useCartTotal } from "./hooks/useCartTotal";
 
 const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -36,40 +37,12 @@ const App = () => {
   // 🛒 장바구니 훅 사용
   const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal } = useCart({ products, addNotification });
 
-  // 🧮 장바구니 총액 계산 - calculateCartTotal 유틸리티 함수로 분리
-  const calculateCartTotal = (): {
-    totalBeforeDiscount: number;
-    totalAfterDiscount: number;
-  } => {
-    let totalBeforeDiscount = 0;
-    let totalAfterDiscount = 0;
-
-    cart.forEach((item) => {
-      const itemPrice = item.product.price * item.quantity;
-      totalBeforeDiscount += itemPrice;
-      totalAfterDiscount += calculateItemTotal(item);
-    });
-
-    if (selectedCoupon) {
-      if (selectedCoupon.discountType === "amount") {
-        totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-      } else {
-        totalAfterDiscount = Math.round(totalAfterDiscount * (1 - selectedCoupon.discountValue / 100));
-      }
-    }
-
-    return {
-      totalBeforeDiscount: Math.round(totalBeforeDiscount),
-      totalAfterDiscount: Math.round(totalAfterDiscount),
-    };
+  // 🧮 장바구니 총액 계산 훅 사용
+  const calculateCartTotal = () => {
+    const totalBeforeDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    const totalAfterDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity * (1 - item.product.discounts[0]?.rate || 0), 0);
+    return { totalBeforeDiscount, totalAfterDiscount };
   };
-
-  const [totalItemCount, setTotalItemCount] = useState(0);
-
-  useEffect(() => {
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    setTotalItemCount(count);
-  }, [cart]);
 
   // 🎫 쿠폰 훅 사용
   const { coupons, selectedCoupon, setSelectedCoupon, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
@@ -77,6 +50,16 @@ const App = () => {
     calculateCartTotal,
     setCart,
   });
+
+  // 🧮 장바구니 총액 계산 훅 사용
+  const totals = useCartTotal({ cart, selectedCoupon, calculateItemTotal });
+
+  const [totalItemCount, setTotalItemCount] = useState(0);
+
+  useEffect(() => {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    setTotalItemCount(count);
+  }, [cart]);
 
   const handleCouponSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,8 +72,6 @@ const App = () => {
     });
     setShowCouponForm(false);
   };
-
-  const totals = calculateCartTotal();
 
   const filteredProducts = debouncedSearchTerm
     ? products.filter(

@@ -70,7 +70,7 @@ export const useCoupon = ({ addNotification, calculateCartTotal, setCart }: UseC
     [selectedCoupon, addNotification]
   );
 
-  // �� localStorage 동기화
+  // 💾 localStorage 동기화
   useEffect(() => {
     localStorage.setItem("coupons", JSON.stringify(coupons));
   }, [coupons]);
