@@ -1,6 +1,6 @@
 import { ProductWithUI } from "../types/product";
 import { CartItem } from "../../types";
-import { useProductFilter } from "../hooks/useProductFilter";
+import { useProductSearch } from "../hooks/useProductSearch";
 import { formatPrice } from "../utils/productUtils";
 
 interface CustomerPageProps {
@@ -39,7 +39,7 @@ export const CustomerPage = ({
   totals,
 }: CustomerPageProps) => {
   /** 상품 필터링 hook 사용 */
-  const filteredProducts = useProductFilter({
+  const filteredProducts = useProductSearch({
     products,
     searchTerm: debouncedSearchTerm,
   });

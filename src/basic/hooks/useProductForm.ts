@@ -13,7 +13,7 @@ export const useProductForm = () => {
   const [productForm, setProductForm] = useState<NewProductForm>(INITIAL_PRODUCT_FORM);
 
   /** 상품 수정시 폼 초기값 설정 */
-  const startEditProduct = useCallback((product: ProductWithUI) => {
+  const editProductForm = useCallback((product: ProductWithUI) => {
     setEditingProduct(product.id);
     setProductForm({
       name: product.name,
@@ -26,7 +26,7 @@ export const useProductForm = () => {
   }, []);
 
   /** 상품 폼 초기화 */
-  const resetProductForm = useCallback(() => {
+  const clearProductForm = useCallback(() => {
     setProductForm(INITIAL_PRODUCT_FORM);
     setEditingProduct(null);
     setShowProductForm(false);
@@ -39,7 +39,7 @@ export const useProductForm = () => {
     setShowProductForm,
     productForm,
     setProductForm,
-    startEditProduct,
-    resetProductForm,
+    editProductForm,
+    clearProductForm,
   };
 };

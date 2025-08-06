@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
-import { NewProductForm, ProductWithUI } from "../types/product";
+import { useCallback, useEffect, useState } from "react";
 import { initialProducts } from "../constants/data";
-import { useNotification } from "./useNotification";
-import { generateProductId } from "../utils/productUtils";
+import { ProductWithUI } from "../types/product";
 import { loadDataFromStorage } from "../utils/localStorageUtils";
+import { generateProductId } from "../utils/productUtils";
+import { useNotification } from "./useNotification";
 
 export const useProduct = () => {
   /** 알림 표시 */

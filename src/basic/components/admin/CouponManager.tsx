@@ -12,13 +12,13 @@ const CouponManager = ({ coupons, deleteCoupon, addCoupon }: ICouponManagementTa
   const { showToast } = useNotification();
 
   /** 쿠폰 등록 폼 hook 사용 */
-  const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, resetCouponForm } = useCouponForm();
+  const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, clearCouponForm } = useCouponForm();
 
   /** 쿠폰 등록 핸들러 */
   const handleCouponSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addCoupon(couponForm);
-    resetCouponForm();
+    clearCouponForm();
     setShowCouponForm(false);
   };
 

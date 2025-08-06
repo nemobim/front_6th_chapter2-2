@@ -11,7 +11,7 @@ interface IProductManagementTableProps {
   setEditingProduct: Dispatch<SetStateAction<string | null>>;
   setProductForm: Dispatch<SetStateAction<NewProductForm>>;
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
-  startEditProduct: (product: ProductWithUI) => void;
+  editProductForm: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
   handleProductSubmit: (e: React.FormEvent) => void;
   productForm: NewProductForm;
@@ -27,7 +27,7 @@ const ProductManager = ({
   setEditingProduct,
   setProductForm,
   setShowProductForm,
-  startEditProduct,
+  editProductForm,
   deleteProduct,
   handleProductSubmit,
   productForm,
@@ -83,7 +83,7 @@ const ProductManager = ({
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{product.description || "-"}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button onClick={() => startEditProduct(product)} className="text-indigo-600 hover:text-indigo-900 mr-3">
+                  <button onClick={() => editProductForm(product)} className="text-indigo-600 hover:text-indigo-900 mr-3">
                     수정
                   </button>
                   <button onClick={() => deleteProduct(product.id)} className="text-red-600 hover:text-red-900">

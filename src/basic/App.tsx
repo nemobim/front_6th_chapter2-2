@@ -27,7 +27,7 @@ const AppContent = () => {
   const { products, addProduct, updateProduct, deleteProduct } = useProduct();
 
   /** 상품 폼 hook 사용 */
-  const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, startEditProduct, resetProductForm } = useProductForm();
+  const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
 
   /** 상품 등록 */
   const handleProductSubmit = useCallback(
@@ -41,9 +41,9 @@ const AppContent = () => {
         addProduct(productForm);
       }
 
-      resetProductForm();
+      clearProductForm();
     },
-    [editingProduct, productForm, updateProduct, addProduct, resetProductForm]
+    [editingProduct, productForm, updateProduct, addProduct, clearProductForm]
   );
 
   /** 장바구니 hook 사용 */
@@ -83,7 +83,7 @@ const AppContent = () => {
                 setEditingProduct={setEditingProduct}
                 setProductForm={setProductForm}
                 setShowProductForm={setShowProductForm}
-                startEditProduct={startEditProduct}
+                editProductForm={editProductForm}
                 deleteProduct={deleteProduct}
                 getRemainingStock={getRemainingStock}
               />

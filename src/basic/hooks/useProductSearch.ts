@@ -6,7 +6,7 @@ interface UseProductFilterProps {
   searchTerm: string;
 }
 
-export const useProductFilter = ({ products, searchTerm }: UseProductFilterProps) => {
+export const useProductSearch = ({ products, searchTerm }: UseProductFilterProps) => {
   const filteredProducts = useMemo(() => {
     if (!searchTerm) return products;
 

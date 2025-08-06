@@ -15,7 +15,7 @@ export const useCouponForm = () => {
   const [couponForm, setCouponForm] = useState(INITIAL_COUPON_FORM);
 
   /** 쿠폰 등록 폼 초기화 */
-  const resetCouponForm = () => {
+  const clearCouponForm = () => {
     setCouponForm({
       name: "",
       code: "",
@@ -29,6 +29,6 @@ export const useCouponForm = () => {
     setCouponForm,
     showCouponForm,
     setShowCouponForm,
-    resetCouponForm,
+    clearCouponForm,
   };
 };
