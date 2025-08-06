@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { CartItem, Coupon } from "../../types";
+import { CartItem } from "../../types";
 import { ProductWithUI } from "../types/product";
 import { useNotification } from "./useNotification";
 import { calculateRemainingStock, calculateItemTotal, calculateTotalItemCount } from "../utils/cartCalculations";
@@ -22,7 +22,6 @@ export const useCart = ({ products }: UseCartProps) => {
     return [];
   });
 
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [totalItemCount, setTotalItemCount] = useState(0);
 
   /** 재고 계산 */
@@ -40,31 +39,6 @@ export const useCart = ({ products }: UseCartProps) => {
     },
     [cart]
   );
-
-  /** 장바구니 총액 계산 (할인 포함) */
-  const cartTotals = useMemo(() => {
-    let totalBeforeDiscount = 0;
-    let totalAfterDiscount = 0;
-
-    cart.forEach((item) => {
-      const itemPrice = item.product.price * item.quantity;
-      totalBeforeDiscount += itemPrice;
-      totalAfterDiscount += calculateItemTotalForCart(item);
-    });
-
-    if (selectedCoupon) {
-      if (selectedCoupon.discountType === "amount") {
-        totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-      } else {
-        totalAfterDiscount = Math.round(totalAfterDiscount * (1 - selectedCoupon.discountValue / 100));
-      }
-    }
-
-    return {
-      totalBeforeDiscount: Math.round(totalBeforeDiscount),
-      totalAfterDiscount: Math.round(totalAfterDiscount),
-    };
-  }, [cart, selectedCoupon, calculateItemTotalForCart]);
 
   /** 장바구니 관련 액션들 */
   const addToCart = useCallback(
@@ -141,9 +115,6 @@ export const useCart = ({ products }: UseCartProps) => {
     cart,
     setCart,
     totalItemCount,
-    selectedCoupon,
-    setSelectedCoupon,
-    cartTotals,
     addToCart,
     removeFromCart,
     updateQuantity,

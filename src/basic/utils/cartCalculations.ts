@@ -20,7 +20,7 @@ const checkBulkPurchase = (cart: CartItem[]): boolean => {
 };
 
 /** 기본 할인율 계산 */
-export const calculateBaseDiscount = (item: CartItem): number => {
+const calculateBaseDiscount = (item: CartItem): number => {
   const { discounts } = item.product;
   const { quantity } = item;
   return discounts.reduce((maxDiscount, discount) => {
@@ -29,7 +29,7 @@ export const calculateBaseDiscount = (item: CartItem): number => {
 };
 
 /** 장바구니 구매 할인율 적용 */
-export const calculateMaxApplicableDiscount = (item: CartItem, cart: CartItem[]): number => {
+const calculateMaxApplicableDiscount = (item: CartItem, cart: CartItem[]): number => {
   const baseDiscount = calculateBaseDiscount(item); // 기본 할인율 계산
   const bulkDiscount = checkBulkPurchase(cart) ? BULK_DISCOUNT_RATE : 0; // 대량 구매 할인율 계산
 

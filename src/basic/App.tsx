@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import AdminNavigation from "./components/admin/AdminNavigation";
 import CouponManager from "./components/admin/CouponManager";
 import ProductManager from "./components/admin/ProductManager";
@@ -6,11 +6,13 @@ import Header from "./components/layout/Header";
 import { TActiveTab } from "./constants/adminConstants";
 import { useCart } from "./hooks/useCart";
 import { useCoupon } from "./hooks/useCoupon";
-import { NotificationProvider } from "./hooks/useNotification";
+import { NotificationProvider, useNotification } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
 import { useSearch } from "./hooks/useSearch";
 import { useProductForm } from "./hooks/useProductForm";
 import { CustomerPage } from "./pages/CustomerPage";
+import { generateOrderNumber } from "./utils/orderUtils";
+import { Coupon } from "../types";
 
 // 메인 앱 컴포넌트 (NotificationProvider 내부에서 실행)
 const AppContent = () => {
@@ -46,16 +48,50 @@ const AppContent = () => {
     [editingProduct, productForm, updateProduct, addProduct, clearProductForm]
   );
 
+  /** 선택된 쿠폰 */
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+
   /** 장바구니 hook 사용 */
-  const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount, cartTotals, selectedCoupon, setSelectedCoupon } = useCart({ products });
+  const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
+
+  /** 장바구니 총액 계산 (할인 포함) */
+  const cartTotals = useMemo(() => {
+    let totalBeforeDiscount = 0;
+    let totalAfterDiscount = 0;
+
+    cart.forEach((item) => {
+      const itemPrice = item.product.price * item.quantity;
+      totalBeforeDiscount += itemPrice;
+      totalAfterDiscount += calculateItemTotal(item);
+    });
+
+    if (selectedCoupon) {
+      if (selectedCoupon.discountType === "amount") {
+        totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
+      } else {
+        totalAfterDiscount = Math.round(totalAfterDiscount * (1 - selectedCoupon.discountValue / 100));
+      }
+    }
+
+    return {
+      totalBeforeDiscount: Math.round(totalBeforeDiscount),
+      totalAfterDiscount: Math.round(totalAfterDiscount),
+    };
+  }, [cart, selectedCoupon]);
 
   /** 쿠폰 hook 사용 */
-  const { coupons, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
-    cartTotals,
-    setCart,
-    selectedCoupon,
-    setSelectedCoupon,
-  });
+  const { coupons, applyCoupon, addCoupon, deleteCoupon } = useCoupon({ cartTotals, selectedCoupon, setSelectedCoupon });
+
+  /** 알림 표시 */
+  const { showToast } = useNotification();
+
+  /** 주문 완료 */
+  const completeOrder = useCallback(() => {
+    const orderNumber = generateOrderNumber();
+    showToast(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
+    setCart([]);
+    setSelectedCoupon(null);
+  }, [showToast, setCart, setSelectedCoupon]);
 
   return (
     <div className="min-h-screen bg-gray-50">

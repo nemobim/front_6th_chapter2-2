@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { initialProducts } from "../constants/data";
 import { ProductWithUI } from "../types/product";
-import { loadDataFromStorage } from "../utils/localStorageUtils";
+import { loadDataFromStorage, saveDataToStorage } from "../utils/localStorageUtils";
 import { generateProductId } from "../utils/productUtils";
 import { useNotification } from "./useNotification";
 
@@ -41,7 +41,7 @@ export const useProduct = () => {
 
   /** localStorage 동기화 */
   useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
+    saveDataToStorage("products", products);
   }, [products]);
 
   return {
