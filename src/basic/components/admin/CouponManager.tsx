@@ -25,7 +25,7 @@ interface ICouponManagementTableProps {
 }
 
 const CouponManager = ({ coupons, showCouponForm, setShowCouponForm, couponForm, setCouponForm, handleCouponSubmit, deleteCoupon }: ICouponManagementTableProps) => {
-  const { addNotification } = useNotification();
+  const { showToast } = useNotification();
   return (
     <section className="bg-white rounded-lg border border-gray-200">
       {/* 🎫 쿠폰 관리 탭 - AdminCouponTab 컴포넌트로 분리 */}
@@ -132,14 +132,14 @@ const CouponManager = ({ coupons, showCouponForm, setShowCouponForm, couponForm,
                       const value = parseInt(e.target.value) || 0;
                       if (couponForm.discountType === "percentage") {
                         if (value > 100) {
-                          addNotification("할인율은 100%를 초과할 수 없습니다", "error");
+                          showToast("할인율은 100%를 초과할 수 없습니다", "error");
                           setCouponForm({ ...couponForm, discountValue: 100 });
                         } else if (value < 0) {
                           setCouponForm({ ...couponForm, discountValue: 0 });
                         }
                       } else {
                         if (value > 100000) {
-                          addNotification("할인 금액은 100,000원을 초과할 수 없습니다", "error");
+                          showToast("할인 금액은 100,000원을 초과할 수 없습니다", "error");
                           setCouponForm({ ...couponForm, discountValue: 100000 });
                         } else if (value < 0) {
                           setCouponForm({ ...couponForm, discountValue: 0 });

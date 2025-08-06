@@ -4,12 +4,14 @@ import { initialCoupons } from "../constants/data";
 import { useNotification } from "./useNotification";
 
 interface UseCouponProps {
-  calculateCartTotal: () => { totalBeforeDiscount: number; totalAfterDiscount: number };
+  cartTotals: { totalBeforeDiscount: number; totalAfterDiscount: number };
   setCart: (cart: any[]) => void;
+  selectedCoupon: Coupon | null;
+  setSelectedCoupon: (coupon: Coupon | null) => void;
 }
 
-export const useCoupon = ({ calculateCartTotal, setCart }: UseCouponProps) => {
-  const { addNotification } = useNotification();
+export const useCoupon = ({ cartTotals, setCart, selectedCoupon, setSelectedCoupon }: UseCouponProps) => {
+  const { showToast } = useNotification();
   const [coupons, setCoupons] = useState<Coupon[]>(() => {
     const saved = localStorage.getItem("coupons");
     if (saved) {
@@ -22,42 +24,40 @@ export const useCoupon = ({ calculateCartTotal, setCart }: UseCouponProps) => {
     return initialCoupons;
   });
 
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-
   // 🎫 쿠폰 관련 액션들
   const applyCoupon = useCallback(
     (coupon: Coupon) => {
-      const currentTotal = calculateCartTotal().totalAfterDiscount;
+      const currentTotal = cartTotals.totalAfterDiscount;
 
       if (currentTotal < 10000 && coupon.discountType === "percentage") {
-        addNotification("percentage 쿠폰은 10,000원 이상 구매 시 사용 가능합니다.", "error");
+        showToast("percentage 쿠폰은 10,000원 이상 구매 시 사용 가능합니다.", "error");
         return;
       }
 
       setSelectedCoupon(coupon);
-      addNotification("쿠폰이 적용되었습니다.", "success");
+      showToast("쿠폰이 적용되었습니다.", "success");
     },
-    [addNotification, calculateCartTotal]
+    [showToast, cartTotals, setSelectedCoupon]
   );
 
   const completeOrder = useCallback(() => {
     const orderNumber = `ORD-${Date.now()}`;
-    addNotification(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
+    showToast(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
     setCart([]);
     setSelectedCoupon(null);
-  }, [addNotification, setCart]);
+  }, [showToast, setCart, setSelectedCoupon]);
 
   const addCoupon = useCallback(
     (newCoupon: Coupon) => {
       const existingCoupon = coupons.find((c) => c.code === newCoupon.code);
       if (existingCoupon) {
-        addNotification("이미 존재하는 쿠폰 코드입니다.", "error");
+        showToast("이미 존재하는 쿠폰 코드입니다.", "error");
         return;
       }
       setCoupons((prev) => [...prev, newCoupon]);
-      addNotification("쿠폰이 추가되었습니다.", "success");
+      showToast("쿠폰이 추가되었습니다.", "success");
     },
-    [coupons, addNotification]
+    [coupons, showToast]
   );
 
   const deleteCoupon = useCallback(
@@ -66,9 +66,9 @@ export const useCoupon = ({ calculateCartTotal, setCart }: UseCouponProps) => {
       if (selectedCoupon?.code === couponCode) {
         setSelectedCoupon(null);
       }
-      addNotification("쿠폰이 삭제되었습니다.", "success");
+      showToast("쿠폰이 삭제되었습니다.", "success");
     },
-    [selectedCoupon, addNotification]
+    [selectedCoupon, showToast, setSelectedCoupon]
   );
 
   // 💾 localStorage 동기화

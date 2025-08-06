@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import AdminNavigation from "./components/admin/AdminNavigation";
 import CouponManager from "./components/admin/CouponManager";
 import ProductManager from "./components/admin/ProductManager";
@@ -7,7 +7,6 @@ import { useCart } from "./hooks/useCart";
 import { useCoupon } from "./hooks/useCoupon";
 import { NotificationProvider } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
-import { useCartTotal } from "./hooks/useCartTotal";
 import { useProductFilter } from "./hooks/useProductFilter";
 import { useCouponForm } from "./hooks/useCouponForm";
 import { CustomerPage } from "./pages/CustomerPage";
@@ -32,24 +31,16 @@ const AppContent = () => {
   const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit, formatPrice } =
     useProduct({ isAdmin });
 
-  // 🛒 장바구니 훅 사용
-  const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
+  // 🛒 장바구니 훅 사용 (통합된 버전)
+  const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount, cartTotals, selectedCoupon, setSelectedCoupon } = useCart({ products });
 
-  // 🎫 장바구니 총액 계산 함수 분리
-  const calculateCartTotal = useCallback(() => {
-    const totalBeforeDiscount = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-    const totalAfterDiscount = cart.reduce((sum, item) => sum + calculateItemTotal(item), 0);
-    return { totalBeforeDiscount, totalAfterDiscount };
-  }, [cart, calculateItemTotal]);
-
-  // 🎫 쿠폰 훅 사용
-  const { coupons, selectedCoupon, setSelectedCoupon, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
-    calculateCartTotal,
+  // 🎫 쿠폰 훅 사용 (업데이트된 인터페이스)
+  const { coupons, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
+    cartTotals,
     setCart,
+    selectedCoupon,
+    setSelectedCoupon,
   });
-
-  // 🧮 장바구니 총액 계산 훅 사용
-  const totals = useCartTotal({ cart, selectedCoupon, calculateItemTotal });
 
   // 🔍 상품 필터링 훅 사용
   const filteredProducts = useProductFilter({
@@ -116,7 +107,7 @@ const AppContent = () => {
             updateQuantity={updateQuantity}
             getRemainingStock={getRemainingStock}
             calculateItemTotal={calculateItemTotal}
-            totals={totals}
+            totals={cartTotals}
             coupons={coupons}
             selectedCoupon={selectedCoupon}
             setSelectedCoupon={setSelectedCoupon}

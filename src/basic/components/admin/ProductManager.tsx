@@ -32,7 +32,7 @@ const ProductManager = ({
   editingProduct,
   showProductForm,
 }: IProductManagementTableProps) => {
-  const { addNotification } = useNotification();
+  const { showToast } = useNotification();
   return (
     <section className="bg-white rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200">
@@ -133,7 +133,7 @@ const ProductManager = ({
                     if (value === "") {
                       setProductForm({ ...productForm, price: 0 });
                     } else if (parseInt(value) < 0) {
-                      addNotification("가격은 0보다 커야 합니다", "error");
+                      showToast("가격은 0보다 커야 합니다", "error");
                       setProductForm({ ...productForm, price: 0 });
                     }
                   }}
@@ -158,10 +158,10 @@ const ProductManager = ({
                     if (value === "") {
                       setProductForm({ ...productForm, stock: 0 });
                     } else if (parseInt(value) < 0) {
-                      addNotification("재고는 0보다 커야 합니다", "error");
+                      showToast("재고는 0보다 커야 합니다", "error");
                       setProductForm({ ...productForm, stock: 0 });
                     } else if (parseInt(value) > 9999) {
-                      addNotification("재고는 9999개를 초과할 수 없습니다", "error");
+                      showToast("재고는 9999개를 초과할 수 없습니다", "error");
                       setProductForm({ ...productForm, stock: 9999 });
                     }
                   }}

@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
-import { CartItem } from "../../types";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { CartItem, Coupon } from "../../types";
 import { ProductWithUI } from "../types/product";
 import { useNotification } from "./useNotification";
 import { calculateRemainingStock, calculateItemTotal, calculateTotalItemCount } from "../utils/cartCalculations";
@@ -9,7 +9,7 @@ interface UseCartProps {
 }
 
 export const useCart = ({ products }: UseCartProps) => {
-  const { addNotification } = useNotification();
+  const { showToast } = useNotification();
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved = localStorage.getItem("cart");
     if (saved) {
@@ -22,9 +22,10 @@ export const useCart = ({ products }: UseCartProps) => {
     return [];
   });
 
+  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [totalItemCount, setTotalItemCount] = useState(0);
 
-  // 📦 재고 계산
+  /** 재고 계산 */
   const getRemainingStock = useCallback(
     (product: ProductWithUI): number => {
       return calculateRemainingStock(product, cart);
@@ -32,7 +33,7 @@ export const useCart = ({ products }: UseCartProps) => {
     [cart]
   );
 
-  // 🧮 개별 상품 총액 계산
+  /** 개별 상품 총액 계산 */
   const calculateItemTotalForCart = useCallback(
     (item: CartItem): number => {
       return calculateItemTotal(item, cart);
@@ -40,12 +41,37 @@ export const useCart = ({ products }: UseCartProps) => {
     [cart]
   );
 
-  // 🛒 장바구니 관련 액션들
+  /** 장바구니 총액 계산 (할인 포함) */
+  const cartTotals = useMemo(() => {
+    let totalBeforeDiscount = 0;
+    let totalAfterDiscount = 0;
+
+    cart.forEach((item) => {
+      const itemPrice = item.product.price * item.quantity;
+      totalBeforeDiscount += itemPrice;
+      totalAfterDiscount += calculateItemTotalForCart(item);
+    });
+
+    if (selectedCoupon) {
+      if (selectedCoupon.discountType === "amount") {
+        totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
+      } else {
+        totalAfterDiscount = Math.round(totalAfterDiscount * (1 - selectedCoupon.discountValue / 100));
+      }
+    }
+
+    return {
+      totalBeforeDiscount: Math.round(totalBeforeDiscount),
+      totalAfterDiscount: Math.round(totalAfterDiscount),
+    };
+  }, [cart, selectedCoupon, calculateItemTotalForCart]);
+
+  /** 장바구니 관련 액션들 */
   const addToCart = useCallback(
     (product: ProductWithUI) => {
       const remainingStock = getRemainingStock(product);
       if (remainingStock <= 0) {
-        addNotification("재고가 부족합니다!", "error");
+        showToast("재고가 부족합니다!", "error");
         return;
       }
 
@@ -56,7 +82,7 @@ export const useCart = ({ products }: UseCartProps) => {
           const newQuantity = existingItem.quantity + 1;
 
           if (newQuantity > product.stock) {
-            addNotification(`재고는 ${product.stock}개까지만 있습니다.`, "error");
+            showToast(`재고는 ${product.stock}개까지만 있습니다.`, "error");
             return prevCart;
           }
 
@@ -66,9 +92,9 @@ export const useCart = ({ products }: UseCartProps) => {
         return [...prevCart, { product, quantity: 1 }];
       });
 
-      addNotification("장바구니에 담았습니다", "success");
+      showToast("장바구니에 담았습니다", "success");
     },
-    [getRemainingStock, addNotification]
+    [getRemainingStock, showToast]
   );
 
   const removeFromCart = useCallback((productId: string) => {
@@ -87,13 +113,13 @@ export const useCart = ({ products }: UseCartProps) => {
 
       const maxStock = product.stock;
       if (newQuantity > maxStock) {
-        addNotification(`재고는 ${maxStock}개까지만 있습니다.`, "error");
+        showToast(`재고는 ${maxStock}개까지만 있습니다.`, "error");
         return;
       }
 
       setCart((prevCart) => prevCart.map((item) => (item.product.id === productId ? { ...item, quantity: newQuantity } : item)));
     },
-    [products, removeFromCart, addNotification]
+    [products, removeFromCart, showToast]
   );
 
   // 🧮 장바구니 아이템 카운트 계산
@@ -115,6 +141,9 @@ export const useCart = ({ products }: UseCartProps) => {
     cart,
     setCart,
     totalItemCount,
+    selectedCoupon,
+    setSelectedCoupon,
+    cartTotals,
     addToCart,
     removeFromCart,
     updateQuantity,

@@ -11,7 +11,7 @@ export const TOAST_STYLES = {
 
 // Context 타입
 interface NotificationContextType {
-  addNotification: (message: string, type?: "error" | "success" | "warning") => void;
+  showToast: (message: string, type?: "error" | "success" | "warning") => void;
 }
 
 // Context 생성
@@ -21,7 +21,7 @@ export const NotificationContext = createContext<NotificationContextType | undef
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const addNotification = useCallback((message: string, type: "error" | "success" | "warning" = "success") => {
+  const showToast = useCallback((message: string, type: "error" | "success" | "warning" = "success") => {
     const id = Date.now().toString();
     setNotifications((prev) => [...prev, { id, message, type }]);
 
@@ -32,9 +32,9 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
   const contextValue = useMemo(
     () => ({
-      addNotification,
+      showToast,
     }),
-    [addNotification]
+    [showToast]
   );
 
   return (

@@ -8,7 +8,7 @@ interface UseProductProps {
 }
 
 export const useProduct = ({ isAdmin }: UseProductProps) => {
-  const { addNotification } = useNotification();
+  const { showToast } = useNotification();
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
     const saved = localStorage.getItem("products");
     if (saved) {
@@ -39,25 +39,25 @@ export const useProduct = ({ isAdmin }: UseProductProps) => {
         id: `p${Date.now()}`,
       };
       setProducts((prev) => [...prev, product]);
-      addNotification("상품이 추가되었습니다.", "success");
+      showToast("상품이 추가되었습니다.", "success");
     },
-    [addNotification]
+    [showToast]
   );
 
   const updateProduct = useCallback(
     (productId: string, updates: Partial<ProductWithUI>) => {
       setProducts((prev) => prev.map((product) => (product.id === productId ? { ...product, ...updates } : product)));
-      addNotification("상품이 수정되었습니다.", "success");
+      showToast("상품이 수정되었습니다.", "success");
     },
-    [addNotification]
+    [showToast]
   );
 
   const deleteProduct = useCallback(
     (productId: string) => {
       setProducts((prev) => prev.filter((p) => p.id !== productId));
-      addNotification("상품이 삭제되었습니다.", "success");
+      showToast("상품이 삭제되었습니다.", "success");
     },
-    [addNotification]
+    [showToast]
   );
 
   const startEditProduct = (product: ProductWithUI) => {
