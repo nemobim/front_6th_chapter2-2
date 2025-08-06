@@ -1,14 +1,14 @@
-import { useState, useCallback, useEffect } from "react";
-import { CartItem, Coupon, Product } from "../types";
-import { initialCoupons, initialProducts } from "./constants/data";
-import { NewProductForm, ProductWithUI } from "./types/product";
-import { Notification } from "./types";
-import Header from "./components/layout/Header";
-import Toast from "./components/elements/Toast";
+import { useCallback, useEffect, useState } from "react";
 import AdminNavigation from "./components/admin/AdminNavigation";
-import ProductManager from "./components/admin/ProductManager";
 import CouponManager from "./components/admin/CouponManager";
+import ProductManager from "./components/admin/ProductManager";
+import Toast from "./components/elements/Toast";
+import Header from "./components/layout/Header";
+import { initialProducts } from "./constants/data";
 import { useCart } from "./hooks/useCart";
+import { useCoupon } from "./hooks/useCoupon";
+import { Notification } from "./types";
+import { NewProductForm, ProductWithUI } from "./types/product";
 
 const App = () => {
   // 🔄 useProduct 훅으로 분리 가능한 상품 관련 상태
@@ -24,20 +24,6 @@ const App = () => {
     return initialProducts;
   });
 
-  // 🎫 useCoupon 훅으로 분리 가능한 쿠폰 관련 상태
-  const [coupons, setCoupons] = useState<Coupon[]>(() => {
-    const saved = localStorage.getItem("coupons");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return initialCoupons;
-      }
-    }
-    return initialCoupons;
-  });
-
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showCouponForm, setShowCouponForm] = useState(false);
@@ -133,10 +119,6 @@ const App = () => {
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem("coupons", JSON.stringify(coupons));
-  }, [coupons]);
-
-  useEffect(() => {
     if (cart.length > 0) {
       localStorage.setItem("cart", JSON.stringify(cart));
     } else {
@@ -152,31 +134,12 @@ const App = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // ============================================================================
-  // 🎫 5. 쿠폰 관련 액션들 - useCoupon 훅으로 분리 가능
-  // ============================================================================
-
-  const applyCoupon = useCallback(
-    (coupon: Coupon) => {
-      const currentTotal = calculateCartTotal().totalAfterDiscount;
-
-      if (currentTotal < 10000 && coupon.discountType === "percentage") {
-        addNotification("percentage 쿠폰은 10,000원 이상 구매 시 사용 가능합니다.", "error");
-        return;
-      }
-
-      setSelectedCoupon(coupon);
-      addNotification("쿠폰이 적용되었습니다.", "success");
-    },
-    [addNotification, calculateCartTotal]
-  );
-
-  const completeOrder = useCallback(() => {
-    const orderNumber = `ORD-${Date.now()}`;
-    addNotification(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
-    setCart([]);
-    setSelectedCoupon(null);
-  }, [addNotification]);
+  // 🎫 쿠폰 훅 사용
+  const { coupons, selectedCoupon, setSelectedCoupon, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
+    addNotification,
+    calculateCartTotal,
+    setCart,
+  });
 
   // ============================================================================
   // 🎫 5. 쿠폰 관련 액션들 - useCoupon 훅으로 분리 가능
@@ -208,30 +171,6 @@ const App = () => {
       addNotification("상품이 삭제되었습니다.", "success");
     },
     [addNotification]
-  );
-
-  const addCoupon = useCallback(
-    (newCoupon: Coupon) => {
-      const existingCoupon = coupons.find((c) => c.code === newCoupon.code);
-      if (existingCoupon) {
-        addNotification("이미 존재하는 쿠폰 코드입니다.", "error");
-        return;
-      }
-      setCoupons((prev) => [...prev, newCoupon]);
-      addNotification("쿠폰이 추가되었습니다.", "success");
-    },
-    [coupons, addNotification]
-  );
-
-  const deleteCoupon = useCallback(
-    (couponCode: string) => {
-      setCoupons((prev) => prev.filter((c) => c.code !== couponCode));
-      if (selectedCoupon?.code === couponCode) {
-        setSelectedCoupon(null);
-      }
-      addNotification("쿠폰이 삭제되었습니다.", "success");
-    },
-    [selectedCoupon, addNotification]
   );
 
   // ============================================================================
