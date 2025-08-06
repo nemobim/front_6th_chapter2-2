@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AdminNavigation from "./components/admin/AdminNavigation";
 import CouponManager from "./components/admin/CouponManager";
 import ProductManager from "./components/admin/ProductManager";
@@ -6,16 +6,15 @@ import Toast from "./components/elements/Toast";
 import Header from "./components/layout/Header";
 import { useCart } from "./hooks/useCart";
 import { useCoupon } from "./hooks/useCoupon";
+import { useDebounce } from "./hooks/useDebounce";
+import { useNotification } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
-import { Notification } from "./types";
 
 const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showCouponForm, setShowCouponForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "coupons">("products");
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   const [couponForm, setCouponForm] = useState({
     name: "",
@@ -24,15 +23,11 @@ const App = () => {
     discountValue: 0,
   });
 
-  // 🔔 알림 관리 - useNotification 훅으로 분리 가능
-  const addNotification = useCallback((message: string, type: "error" | "success" | "warning" = "success") => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, message, type }]);
+  // 🔔 알림 관리 훅 사용
+  const { notifications, setNotifications, addNotification } = useNotification();
 
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 3000);
-  }, []);
+  // 🔍 검색 디바운스 훅 사용
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   // 🛍️ 상품 훅 사용
   const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit, formatPrice } =
@@ -75,14 +70,6 @@ const App = () => {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     setTotalItemCount(count);
   }, [cart]);
-
-  // 🔍 검색 디바운스 - useDebounce 훅으로 분리 가능
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
 
   // 🎫 쿠폰 훅 사용
   const { coupons, selectedCoupon, setSelectedCoupon, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
