@@ -24,17 +24,14 @@ const AppContent = () => {
   /** 검색어 설정 */
   const { searchTerm, setSearchTerm, debouncedSearchTerm } = useSearch();
 
-  // 🎫 쿠폰 폼 훅 사용
-  const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, resetCouponForm } = useCouponForm();
-
-  // 🛍️ 상품 훅 사용
+  /** 상품 hook 사용 */
   const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit, formatPrice } =
     useProduct({ isAdmin });
 
-  // 🛒 장바구니 훅 사용 (통합된 버전)
+  /** 장바구니 hook 사용 */
   const { cart, setCart, addToCart, removeFromCart, updateQuantity, getRemainingStock, calculateItemTotal, totalItemCount, cartTotals, selectedCoupon, setSelectedCoupon } = useCart({ products });
 
-  // 🎫 쿠폰 훅 사용 (업데이트된 인터페이스)
+  /** 쿠폰 hook 사용 */
   const { coupons, applyCoupon, completeOrder, addCoupon, deleteCoupon } = useCoupon({
     cartTotals,
     setCart,
@@ -42,18 +39,11 @@ const AppContent = () => {
     setSelectedCoupon,
   });
 
-  // 🔍 상품 필터링 훅 사용
+  /** 상품 필터링 hook 사용 */
   const filteredProducts = useProductFilter({
     products,
     searchTerm: debouncedSearchTerm,
   });
-
-  const handleCouponSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    addCoupon(couponForm);
-    resetCouponForm();
-    setShowCouponForm(false);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,15 +75,7 @@ const AppContent = () => {
                 deleteProduct={deleteProduct}
               />
             ) : (
-              <CouponManager
-                coupons={coupons}
-                showCouponForm={showCouponForm}
-                setShowCouponForm={setShowCouponForm}
-                couponForm={couponForm}
-                setCouponForm={setCouponForm}
-                handleCouponSubmit={handleCouponSubmit}
-                deleteCoupon={deleteCoupon}
-              />
+              <CouponManager coupons={coupons} deleteCoupon={deleteCoupon} addCoupon={addCoupon} />
             )}
           </div>
         ) : (

@@ -9,6 +9,7 @@ export const useCouponForm = () => {
     discountValue: 0,
   });
 
+  /** 쿠폰 등록 폼 초기화 */
   const resetCouponForm = () => {
     setCouponForm({
       name: "",
@@ -19,10 +20,10 @@ export const useCouponForm = () => {
   };
 
   return {
-    showCouponForm,
-    setShowCouponForm,
     couponForm,
     setCouponForm,
+    showCouponForm,
+    setShowCouponForm,
     resetCouponForm,
   };
 };

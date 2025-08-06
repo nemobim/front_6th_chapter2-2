@@ -1,31 +1,27 @@
-import { Dispatch, SetStateAction } from "react";
 import { Coupon } from "../../../types";
+import { useCouponForm } from "../../hooks/useCouponForm";
 import { useNotification } from "../../hooks/useNotification";
 
 interface ICouponManagementTableProps {
   coupons: Coupon[];
-  showCouponForm: boolean;
-  setShowCouponForm: Dispatch<SetStateAction<boolean>>;
-  couponForm: {
-    name: string;
-    code: string;
-    discountType: "amount" | "percentage";
-    discountValue: number;
-  };
-  setCouponForm: Dispatch<
-    SetStateAction<{
-      name: string;
-      code: string;
-      discountType: "amount" | "percentage";
-      discountValue: number;
-    }>
-  >;
-  handleCouponSubmit: (e: React.FormEvent) => void;
+  addCoupon: (coupon: Coupon) => void;
   deleteCoupon: (couponCode: string) => void;
 }
 
-const CouponManager = ({ coupons, showCouponForm, setShowCouponForm, couponForm, setCouponForm, handleCouponSubmit, deleteCoupon }: ICouponManagementTableProps) => {
+const CouponManager = ({ coupons, deleteCoupon, addCoupon }: ICouponManagementTableProps) => {
   const { showToast } = useNotification();
+
+  /** 쿠폰 등록 폼 hook 사용 */
+  const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, resetCouponForm } = useCouponForm();
+
+  /** 쿠폰 등록 핸들러 */
+  const handleCouponSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addCoupon(couponForm);
+    resetCouponForm();
+    setShowCouponForm(false);
+  };
+
   return (
     <section className="bg-white rounded-lg border border-gray-200">
       {/* 🎫 쿠폰 관리 탭 - AdminCouponTab 컴포넌트로 분리 */}
