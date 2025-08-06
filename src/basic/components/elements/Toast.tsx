@@ -1,11 +1,20 @@
 import { Notification } from "../../types";
+import { CloseIcon } from "./Icons";
 
 export interface IToastProps {
   notifications: Notification[];
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
 }
 
+/** 알림 스타일 */
+export const TOAST_STYLES = {
+  error: "bg-red-600",
+  warning: "bg-yellow-600",
+  success: "bg-green-600",
+};
+
 const Toast = ({ notifications, setNotifications }: IToastProps) => {
+  /** 알림 제거 */
   const handleRemoveNotification = (id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
@@ -17,13 +26,16 @@ const Toast = ({ notifications, setNotifications }: IToastProps) => {
           {notifications.map((notif) => (
             <div
               key={notif.id}
-              className={`p-4 rounded-md shadow-md text-white flex justify-between items-center ${notif.type === "error" ? "bg-red-600" : notif.type === "warning" ? "bg-yellow-600" : "bg-green-600"}`}
+              className={`p-4 rounded-md shadow-md text-white flex justify-between items-center ${
+                TOAST_STYLES[notif.type] || TOAST_STYLES.success
+              }`}
             >
               <span className="mr-2">{notif.message}</span>
-              <button onClick={() => handleRemoveNotification(notif.id)} className="text-white hover:text-gray-200">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+              <button
+                onClick={() => handleRemoveNotification(notif.id)}
+                className="text-white hover:text-gray-200"
+              >
+                <CloseIcon />
               </button>
             </div>
           ))}
