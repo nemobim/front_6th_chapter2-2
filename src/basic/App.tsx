@@ -11,11 +11,10 @@ import { useNotification } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
 import { useCartTotal } from "./hooks/useCartTotal";
 import { useProductFilter } from "./hooks/useProductFilter";
+import { useAdmin } from "./hooks/useAdmin";
 
 const App = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
   const [showCouponForm, setShowCouponForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<"products" | "coupons">("products");
   const [searchTerm, setSearchTerm] = useState("");
 
   const [couponForm, setCouponForm] = useState({
@@ -30,6 +29,9 @@ const App = () => {
 
   // 🔍 검색 디바운스 훅 사용
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  // 👨‍💼 관리자 상태 훅 사용
+  const { isAdmin, setIsAdmin, activeTab, setActiveTab } = useAdmin();
 
   // 🛍️ 상품 훅 사용
   const { products, editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, deleteProduct, startEditProduct, handleProductSubmit, formatPrice } =
