@@ -2,7 +2,7 @@ import { Coupon } from "../../types";
 import { ProductWithUI } from "../types/product";
 
 /** 상품 초기 데이터 */
-export const initialProducts: ProductWithUI[] = [
+export const INITIAL_PRODUCTS: ProductWithUI[] = [
   {
     id: "p1",
     name: "상품1",

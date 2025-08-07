@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { initialProducts } from "../constants/data";
+import { INITIAL_PRODUCTS } from "../constants/data";
 import { ProductWithUI } from "../types/product";
 import { loadDataFromStorage, saveDataToStorage } from "../utils/localStorageUtils";
 import { generateProductId } from "../utils/productUtils";
@@ -10,7 +10,7 @@ export const useProduct = () => {
   const { showToast } = useNotification();
 
   /** 상품 현황 */
-  const [products, setProducts] = useState<ProductWithUI[]>(loadDataFromStorage<ProductWithUI[]>("products", initialProducts));
+  const [products, setProducts] = useState<ProductWithUI[]>(loadDataFromStorage<ProductWithUI[]>("products", INITIAL_PRODUCTS));
 
   /** 상품 추가 */
   const addProduct = useCallback(
