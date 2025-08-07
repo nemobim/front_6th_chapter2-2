@@ -1,15 +1,16 @@
+import { useAtom } from "jotai";
+import { isAdminAtom } from "../../../atoms/adminAtoms";
 import { ProductWithUI } from "../../../types/product";
 import { formatPrice, getStockStatusStyle, PRODUCT_TABLE_HEADERS } from "../../../utils/productUtils";
 
 interface IProductTableProps {
   products: ProductWithUI[];
-  isAdmin: boolean;
   getRemainingStock: (product: ProductWithUI) => number;
   editProductForm: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
 }
 
-const ProductTable = ({ products, isAdmin, getRemainingStock, editProductForm, deleteProduct }: IProductTableProps) => {
+const ProductTable = ({ products, getRemainingStock, editProductForm, deleteProduct }: IProductTableProps) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -25,15 +26,7 @@ const ProductTable = ({ products, isAdmin, getRemainingStock, editProductForm, d
         <tbody className="bg-white divide-y divide-gray-200">
           {/* 상품 목록 렌더링 */}
           {products.map((product) => (
-            <ProductTableRow
-              key={product.id}
-              product={product}
-              isAdmin={isAdmin}
-              products={products}
-              getRemainingStock={getRemainingStock}
-              editProductForm={editProductForm}
-              deleteProduct={deleteProduct}
-            />
+            <ProductTableRow key={product.id} product={product} products={products} getRemainingStock={getRemainingStock} editProductForm={editProductForm} deleteProduct={deleteProduct} />
           ))}
         </tbody>
       </table>
@@ -45,14 +38,16 @@ export default ProductTable;
 
 interface IProductTableRowProps {
   product: ProductWithUI;
-  isAdmin: boolean;
   products: ProductWithUI[];
   getRemainingStock: (product: ProductWithUI) => number;
   editProductForm: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
 }
 
-export const ProductTableRow = ({ product, isAdmin, products, getRemainingStock, editProductForm, deleteProduct }: IProductTableRowProps) => {
+export const ProductTableRow = ({ product, products, getRemainingStock, editProductForm, deleteProduct }: IProductTableRowProps) => {
+  /** 관리자 모드 여부 - Jotai 사용 */
+  const [isAdmin] = useAtom(isAdminAtom);
+
   return (
     <tr className="hover:bg-gray-50">
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>

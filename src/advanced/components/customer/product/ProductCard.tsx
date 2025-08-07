@@ -1,15 +1,19 @@
+import { useAtom } from "jotai";
+import { isAdminAtom } from "../../../atoms/adminAtoms";
 import { ProductWithUI } from "../../../types/product";
 import { formatPrice } from "../../../utils/productUtils";
 import { ImageIcon } from "../../elements/Icons";
 
 interface ProductCardProps {
   product: ProductWithUI;
-  isAdmin: boolean;
   onAddToCart: (product: ProductWithUI) => void;
   getRemainingStock: (product: ProductWithUI) => number;
 }
 
-export const ProductCard = ({ product, isAdmin, onAddToCart, getRemainingStock }: ProductCardProps) => {
+export const ProductCard = ({ product, onAddToCart, getRemainingStock }: ProductCardProps) => {
+  /** 관리자 모드 여부 - Jotai 사용 */
+  const [isAdmin] = useAtom(isAdminAtom);
+
   /** 재고 확인 */
   const remainingStock = getRemainingStock(product);
 

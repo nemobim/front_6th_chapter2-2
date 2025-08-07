@@ -1,3 +1,5 @@
+import { useAtom } from "jotai";
+import { isAdminAtom } from "../../../atoms/adminAtoms";
 import { ProductWithUI } from "../../../types/product";
 import { ProductCard } from "./ProductCard";
 
@@ -5,12 +7,11 @@ interface ProductGridProps {
   products: ProductWithUI[];
   filteredProducts: ProductWithUI[];
   debouncedSearchTerm: string;
-  isAdmin: boolean;
   getRemainingStock: (product: ProductWithUI) => number;
   addToCart: (product: ProductWithUI) => void;
 }
 
-export const ProductGrid = ({ products, filteredProducts, debouncedSearchTerm, isAdmin, getRemainingStock, addToCart }: ProductGridProps) => {
+export const ProductGrid = ({ products, filteredProducts, debouncedSearchTerm, getRemainingStock, addToCart }: ProductGridProps) => {
   return (
     <section>
       <div className="mb-6 flex justify-between items-center">
@@ -25,7 +26,7 @@ export const ProductGrid = ({ products, filteredProducts, debouncedSearchTerm, i
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProducts.map((product) => {
-            return <ProductCard key={product.id} product={product} isAdmin={isAdmin} onAddToCart={addToCart} getRemainingStock={getRemainingStock} />;
+            return <ProductCard key={product.id} product={product} onAddToCart={addToCart} getRemainingStock={getRemainingStock} />;
           })}
         </div>
       )}

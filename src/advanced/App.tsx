@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Provider } from "jotai";
 import Header from "./components/layout/Header";
 import { useCart } from "./hooks/useCart";
 import { useCartTotals } from "./hooks/useCartTotals";
@@ -8,11 +8,13 @@ import { useProduct } from "./hooks/useProduct";
 import { useProductForm } from "./hooks/useProductForm";
 import AdminPage from "./pages/AdminPage";
 import { CustomerPage } from "./pages/CustomerPage";
+import { useAtom } from "jotai";
+import { isAdminAtom } from "./atoms/adminAtoms";
 
 // 메인 앱 컴포넌트 (NotificationProvider 내부에서 실행)
 const AppContent = () => {
-  /** 관리자 상태 여부 */
-  const [isAdmin, setIsAdmin] = useState(false);
+  /** 관리자 상태 여부 - Jotai 사용 */
+  const [isAdmin] = useAtom(isAdminAtom);
 
   /** 상품 hook 사용 */
   const { products, addProduct, updateProduct, deleteProduct } = useProduct();
@@ -31,7 +33,7 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header isAdmin={isAdmin} setIsAdmin={setIsAdmin} totalItemCount={totalItemCount} />
+      <Header totalItemCount={totalItemCount} />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage
@@ -53,7 +55,6 @@ const AppContent = () => {
           />
         ) : (
           <CustomerPage
-            isAdmin={isAdmin}
             products={products}
             cart={cart}
             setCart={setCart}
@@ -74,9 +75,11 @@ const AppContent = () => {
 // 루트 앱 컴포넌트 (Provider로 감싸기)
 const App = () => {
   return (
-    <NotificationProvider>
-      <AppContent />
-    </NotificationProvider>
+    <Provider>
+      <NotificationProvider>
+        <AppContent />
+      </NotificationProvider>
+    </Provider>
   );
 };
 

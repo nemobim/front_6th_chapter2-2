@@ -1,24 +1,17 @@
-import { Dispatch, SetStateAction } from "react";
 import { useAtom } from "jotai";
 import { searchTermAtom } from "../../atoms/searchAtoms";
+import { isAdminAtom } from "../../atoms/adminAtoms";
 import { CartIcon } from "../elements/Icons";
+import { SetStateAction } from "jotai";
+import { Dispatch } from "react";
 
 export interface IHeaderProps {
-  isAdmin: boolean;
-  setIsAdmin: Dispatch<SetStateAction<boolean>>;
   totalItemCount: number;
 }
 
-export interface ISearchBarProps {
-  // Jotai를 사용하므로 props 제거
-}
+const Header = ({ totalItemCount }: IHeaderProps) => {
+  const [isAdmin, setIsAdmin] = useAtom(isAdminAtom);
 
-export interface IAdminToggleProps {
-  isAdmin: boolean;
-  setIsAdmin: Dispatch<SetStateAction<boolean>>;
-}
-
-const Header = ({ isAdmin, setIsAdmin, totalItemCount }: IHeaderProps) => {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40 border-b">
       <div className="max-w-7xl mx-auto px-4">
@@ -58,11 +51,13 @@ export const SearchBar = () => {
 };
 
 /** 관리자 토글 버튼 */
-export const AdminToggle = ({ isAdmin, setIsAdmin }: IAdminToggleProps) => (
-  <button onClick={() => setIsAdmin(!isAdmin)} className={`px-3 py-1.5 text-sm rounded transition-colors ${isAdmin ? "bg-gray-800 text-white" : "text-gray-600 hover:text-gray-900"}`}>
-    {isAdmin ? "쇼핑몰로 돌아가기" : "관리자 페이지로"}
-  </button>
-);
+export const AdminToggle = ({ isAdmin, setIsAdmin }: { isAdmin: boolean; setIsAdmin: Dispatch<SetStateAction<boolean>> }) => {
+  return (
+    <button onClick={() => setIsAdmin(!isAdmin)} className={`px-3 py-1.5 text-sm rounded transition-colors ${isAdmin ? "bg-gray-800 text-white" : "text-gray-600 hover:text-gray-900"}`}>
+      {isAdmin ? "쇼핑몰로 돌아가기" : "관리자 페이지로"}
+    </button>
+  );
+};
 
 /** 장바구니 수량 */
 export const CartCount = ({ totalItemCount }: { totalItemCount: number }) => (

@@ -5,7 +5,6 @@ import ProductHeader from "./ProductHeader";
 import ProductTable from "./ProductTable";
 
 interface IProductManagementTableProps {
-  isAdmin: boolean;
   products: ProductWithUI[];
   setEditingProduct: Dispatch<SetStateAction<string | null>>;
   setProductForm: Dispatch<SetStateAction<NewProductForm>>;
@@ -22,7 +21,6 @@ interface IProductManagementTableProps {
 }
 
 const ProductManager = ({
-  isAdmin,
   products,
   setEditingProduct,
   setProductForm,
@@ -61,7 +59,7 @@ const ProductManager = ({
       <ProductHeader setEditingProduct={setEditingProduct} setProductForm={setProductForm} setShowProductForm={setShowProductForm} />
 
       {/* 상품 테이블 */}
-      <ProductTable products={products} isAdmin={isAdmin} getRemainingStock={getRemainingStock} editProductForm={editProductForm} deleteProduct={deleteProduct} />
+      <ProductTable products={products} getRemainingStock={getRemainingStock} editProductForm={editProductForm} deleteProduct={deleteProduct} />
 
       {/* 상품 폼 섹션 */}
       {showProductForm && (

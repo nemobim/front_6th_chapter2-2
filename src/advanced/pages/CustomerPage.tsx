@@ -11,7 +11,6 @@ import { couponsAtom, selectedCouponAtom } from "../atoms/couponAtoms";
 import { useSearch } from "../hooks/useSearch";
 
 interface CustomerPageProps {
-  isAdmin: boolean;
   products: ProductWithUI[];
   cart: CartItem[];
   setCart: Dispatch<SetStateAction<CartItem[]>>;
@@ -24,7 +23,7 @@ interface CustomerPageProps {
   totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
 }
 
-export const CustomerPage = ({ isAdmin, products, cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, applyCoupon, totals }: CustomerPageProps) => {
+export const CustomerPage = ({ products, cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, applyCoupon, totals }: CustomerPageProps) => {
   /** 쿠폰 목록 - Jotai 사용 */
   const [coupons] = useAtom(couponsAtom);
 
@@ -54,7 +53,7 @@ export const CustomerPage = ({ isAdmin, products, cart, setCart, addToCart, remo
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-3">
-        <ProductGrid products={products} filteredProducts={filteredProducts} debouncedSearchTerm={debouncedSearchTerm} isAdmin={isAdmin} getRemainingStock={getRemainingStock} addToCart={addToCart} />
+        <ProductGrid products={products} filteredProducts={filteredProducts} debouncedSearchTerm={debouncedSearchTerm} getRemainingStock={getRemainingStock} addToCart={addToCart} />
       </div>
       <div className="lg:col-span-1">
         <CartSidebar
