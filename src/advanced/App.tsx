@@ -28,7 +28,7 @@ const AppContent = () => {
   const cartTotals = useCartTotals({ calculateItemTotal });
 
   /** 쿠폰 hook 사용 */
-  const { applyCoupon, addCoupon, deleteCoupon } = useCoupon({ cartTotals });
+  const { addCoupon, deleteCoupon } = useCoupon({ cartTotals });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,7 +60,6 @@ const AppContent = () => {
             updateCartQuantity={updateCartQuantity}
             getRemainingStock={getRemainingStock}
             calculateItemTotal={calculateItemTotal}
-            applyCoupon={applyCoupon}
           />
         )}
       </main>
