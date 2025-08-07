@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Coupon } from "../types";
 import Header from "./components/layout/Header";
-import { TActiveTab } from "./constants/adminConstants";
 import { useCart } from "./hooks/useCart";
 import { useCartTotals } from "./hooks/useCartTotals";
 import { useCoupon } from "./hooks/useCoupon";
