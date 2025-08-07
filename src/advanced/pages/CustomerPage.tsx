@@ -8,13 +8,13 @@ import { ProductWithUI } from "../types/product";
 import { generateOrderNumber } from "../utils/orderUtils";
 import { useAtom } from "jotai";
 import { couponsAtom, selectedCouponAtom } from "../atoms/couponAtoms";
+import { useSearch } from "../hooks/useSearch";
 
 interface CustomerPageProps {
   isAdmin: boolean;
   products: ProductWithUI[];
   cart: CartItem[];
   setCart: Dispatch<SetStateAction<CartItem[]>>;
-  debouncedSearchTerm: string;
   addToCart: (product: ProductWithUI) => void;
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
@@ -24,22 +24,12 @@ interface CustomerPageProps {
   totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
 }
 
-export const CustomerPage = ({
-  isAdmin,
-  products,
-  cart,
-  setCart,
-  debouncedSearchTerm,
-  addToCart,
-  removeFromCart,
-  updateCartQuantity,
-  getRemainingStock,
-  calculateItemTotal,
-  applyCoupon,
-  totals,
-}: CustomerPageProps) => {
+export const CustomerPage = ({ isAdmin, products, cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, applyCoupon, totals }: CustomerPageProps) => {
   /** 쿠폰 목록 - Jotai 사용 */
   const [coupons] = useAtom(couponsAtom);
+
+  /** 검색어 설정 - Jotai 사용 */
+  const { debouncedSearchTerm } = useSearch();
 
   /** 선택된 쿠폰 - Jotai 사용 */
   const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);

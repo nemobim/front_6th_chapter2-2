@@ -1,17 +1,16 @@
 import { Dispatch, SetStateAction } from "react";
+import { useAtom } from "jotai";
+import { searchTermAtom } from "../../atoms/searchAtoms";
 import { CartIcon } from "../elements/Icons";
 
 export interface IHeaderProps {
   isAdmin: boolean;
-  searchTerm: string;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
   setIsAdmin: Dispatch<SetStateAction<boolean>>;
   totalItemCount: number;
 }
 
 export interface ISearchBarProps {
-  searchTerm: string;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
+  // Jotai를 사용하므로 props 제거
 }
 
 export interface IAdminToggleProps {
@@ -19,7 +18,7 @@ export interface IAdminToggleProps {
   setIsAdmin: Dispatch<SetStateAction<boolean>>;
 }
 
-const Header = ({ searchTerm, setSearchTerm, isAdmin, setIsAdmin, totalItemCount }: IHeaderProps) => {
+const Header = ({ isAdmin, setIsAdmin, totalItemCount }: IHeaderProps) => {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40 border-b">
       <div className="max-w-7xl mx-auto px-4">
@@ -27,7 +26,7 @@ const Header = ({ searchTerm, setSearchTerm, isAdmin, setIsAdmin, totalItemCount
           <div className="flex items-center flex-1">
             <h1 className="text-xl font-semibold text-gray-800">SHOP</h1>
             {/* 검색창 */}
-            {!isAdmin && <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
+            {!isAdmin && <SearchBar />}
           </div>
           <nav className="flex items-center space-x-4">
             <AdminToggle isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
@@ -42,26 +41,25 @@ const Header = ({ searchTerm, setSearchTerm, isAdmin, setIsAdmin, totalItemCount
 export default Header;
 
 /** 검색창 */
-export const SearchBar = ({ searchTerm, setSearchTerm }: ISearchBarProps) => (
-  <div className="ml-8 flex-1 max-w-md">
-    <input
-      type="text"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      placeholder="상품 검색..."
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-    />
-  </div>
-);
+export const SearchBar = () => {
+  const [searchTerm, setSearchTerm] = useAtom(searchTermAtom);
+
+  return (
+    <div className="ml-8 flex-1 max-w-md">
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="상품 검색..."
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+      />
+    </div>
+  );
+};
 
 /** 관리자 토글 버튼 */
 export const AdminToggle = ({ isAdmin, setIsAdmin }: IAdminToggleProps) => (
-  <button
-    onClick={() => setIsAdmin(!isAdmin)}
-    className={`px-3 py-1.5 text-sm rounded transition-colors ${
-      isAdmin ? "bg-gray-800 text-white" : "text-gray-600 hover:text-gray-900"
-    }`}
-  >
+  <button onClick={() => setIsAdmin(!isAdmin)} className={`px-3 py-1.5 text-sm rounded transition-colors ${isAdmin ? "bg-gray-800 text-white" : "text-gray-600 hover:text-gray-900"}`}>
     {isAdmin ? "쇼핑몰로 돌아가기" : "관리자 페이지로"}
   </button>
 );
@@ -70,10 +68,6 @@ export const AdminToggle = ({ isAdmin, setIsAdmin }: IAdminToggleProps) => (
 export const CartCount = ({ totalItemCount }: { totalItemCount: number }) => (
   <div className="relative">
     <CartIcon />
-    {totalItemCount > 0 && (
-      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-        {totalItemCount}
-      </span>
-    )}
+    {totalItemCount > 0 && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{totalItemCount}</span>}
   </div>
 );

@@ -6,7 +6,6 @@ import { useCoupon } from "./hooks/useCoupon";
 import { NotificationProvider } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
 import { useProductForm } from "./hooks/useProductForm";
-import { useSearch } from "./hooks/useSearch";
 import AdminPage from "./pages/AdminPage";
 import { CustomerPage } from "./pages/CustomerPage";
 
@@ -14,9 +13,6 @@ import { CustomerPage } from "./pages/CustomerPage";
 const AppContent = () => {
   /** 관리자 상태 여부 */
   const [isAdmin, setIsAdmin] = useState(false);
-
-  /** 검색어 설정 */
-  const { searchTerm, setSearchTerm, debouncedSearchTerm } = useSearch();
 
   /** 상품 hook 사용 */
   const { products, addProduct, updateProduct, deleteProduct } = useProduct();
@@ -35,7 +31,7 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header isAdmin={isAdmin} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setIsAdmin={setIsAdmin} totalItemCount={totalItemCount} />
+      <Header isAdmin={isAdmin} setIsAdmin={setIsAdmin} totalItemCount={totalItemCount} />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage
@@ -61,7 +57,6 @@ const AppContent = () => {
             products={products}
             cart={cart}
             setCart={setCart}
-            debouncedSearchTerm={debouncedSearchTerm}
             addToCart={addToCart}
             removeFromCart={removeFromCart}
             updateCartQuantity={updateCartQuantity}
