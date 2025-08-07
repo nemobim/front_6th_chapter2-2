@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { Dispatch, SetStateAction } from "react";
+import { useProductFormHandlers } from "../../hooks/useProductFormHandlers";
 import { NewProductForm } from "../../types/product";
-import { DISCOUNT_OPTIONS, INITIAL_PRODUCT_FORM, processNumericInput, productValidation } from "../../utils/productUtils";
-import { useNotification } from "../../hooks/useNotification";
+import { MAX_DESCRIPTION_LENGTH, MAX_PRODUCT_NAME_LENGTH } from "../../utils/productUtils";
 
 interface IProductFormProps {
   productForm: NewProductForm;
@@ -12,120 +12,25 @@ interface IProductFormProps {
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
 }
 const ProductForm = ({ productForm, editingProduct, handleProductSubmit, setProductForm, setEditingProduct, setShowProductForm }: IProductFormProps) => {
-  const { showToast } = useNotification();
-  /** 상품 폼 업데이트 */
-  const updateField = useCallback(
-    <K extends keyof NewProductForm>(field: K, value: NewProductForm[K]) => {
-      setProductForm((prev) => ({ ...prev, [field]: value }));
-    },
-    [setProductForm]
-  );
-
-  /** 상품명 입력 핸들러 */
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateField("name", e.target.value);
-    },
-    [updateField]
-  );
-
-  /** 설명 입력 핸들러 */
-  const handleDescriptionChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateField("description", e.target.value);
-    },
-    [updateField]
-  );
-
-  /** 가격 입력 (숫자만 허용) */
-  const handlePriceChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const processedValue = processNumericInput(e.target.value);
-      if (processedValue !== null) {
-        updateField("price", processedValue);
-      }
-    },
-    [updateField]
-  );
-
-  /** 가격 포커스 해제 시 검증 */
-  const handlePriceBlur = useCallback(
-    (e: React.FocusEvent<HTMLInputElement>) => {
-      const validation = productValidation.validatePrice(parseInt(e.target.value) || 0);
-
-      if (!validation.isValid) {
-        showToast(validation.message!, "error");
-        updateField("price", validation.correctedValue!);
-      }
-    },
-    [updateField, showToast]
-  );
-
-  /** 재고 입력 (숫자만 허용) */
-  const handleStockChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const processedValue = processNumericInput(e.target.value);
-      if (processedValue !== null) {
-        updateField("stock", processedValue);
-      }
-    },
-    [updateField]
-  );
-
-  /** 재고 포커스 해제 시 검증 */
-  const handleStockBlur = useCallback(
-    (e: React.FocusEvent<HTMLInputElement>) => {
-      const validation = productValidation.validateStock(parseInt(e.target.value) || 0);
-
-      if (!validation.isValid) {
-        showToast(validation.message!, "error");
-        updateField("stock", validation.correctedValue!);
-      }
-    },
-    [updateField, showToast]
-  );
-
-  /** 할인 수량 변경 */
-  const handleDiscountQuantityChange = useCallback(
-    (index: number, value: string) => {
-      const newDiscounts = [...productForm.discounts];
-      newDiscounts[index].quantity = parseInt(value) || 0;
-      updateField("discounts", newDiscounts);
-    },
-    [productForm.discounts, updateField]
-  );
-
-  /** 할인 비율 변경 */
-  const handleDiscountRateChange = useCallback(
-    (index: number, value: string) => {
-      const newDiscounts = [...productForm.discounts];
-      newDiscounts[index].rate = (parseInt(value) || 0) / 100;
-      updateField("discounts", newDiscounts);
-    },
-    [productForm.discounts, updateField]
-  );
-
-  /** 할인 제거 */
-  const handleRemoveDiscount = useCallback(
-    (index: number) => {
-      const newDiscounts = productForm.discounts.filter((_, i) => i !== index);
-      updateField("discounts", newDiscounts);
-    },
-    [productForm.discounts, updateField]
-  );
-
-  /** 할인 추가 */
-  const handleAddDiscount = useCallback(() => {
-    const newDiscount = DISCOUNT_OPTIONS.DEFAULT_DISCOUNT;
-    updateField("discounts", [...productForm.discounts, newDiscount]);
-  }, [productForm.discounts, updateField]);
-
-  /**상품 추가 취소 */
-  const handleCancel = useCallback(() => {
-    setEditingProduct(null);
-    setProductForm(INITIAL_PRODUCT_FORM);
-    setShowProductForm(false);
-  }, [setEditingProduct, setProductForm, setShowProductForm]);
+  /** 상품 폼 핸들러 사용 */
+  const {
+    handleNameChange,
+    handleDescriptionChange,
+    handlePriceChange,
+    handlePriceBlur,
+    handleStockChange,
+    handleStockBlur,
+    handleDiscountQuantityChange,
+    handleDiscountRateChange,
+    handleRemoveDiscount,
+    handleAddDiscount,
+    handleCancel,
+  } = useProductFormHandlers({
+    setProductForm,
+    productForm,
+    setEditingProduct,
+    setShowProductForm,
+  });
 
   return (
     <div className="p-6 border-t border-gray-200 bg-gray-50">
@@ -145,7 +50,7 @@ const ProductForm = ({ productForm, editingProduct, handleProductSubmit, setProd
               onChange={handleNameChange}
               className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
               required
-              maxLength={100}
+              maxLength={MAX_PRODUCT_NAME_LENGTH}
             />
           </div>
 
@@ -157,7 +62,7 @@ const ProductForm = ({ productForm, editingProduct, handleProductSubmit, setProd
               value={productForm.description}
               onChange={handleDescriptionChange}
               className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
-              maxLength={200}
+              maxLength={MAX_DESCRIPTION_LENGTH}
             />
           </div>
 

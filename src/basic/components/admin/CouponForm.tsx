@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import { Coupon } from "../../../types";
-import { useNotification } from "../../hooks/useNotification";
-import { couponHandlers, DISCOUNT_TYPE_OPTIONS, MAX_COUPON_CODE_LENGTH, MAX_COUPON_NAME_LENGTH, validateDiscountValue } from "../../utils/couponUtils";
+import { couponHandlers, DISCOUNT_TYPE_OPTIONS, MAX_COUPON_CODE_LENGTH, MAX_COUPON_NAME_LENGTH } from "../../utils/couponUtils";
+import { useCouponFormHandlers } from "../../hooks/useCouponFormHandlers";
 
 interface ICouponFormProps {
   addCoupon: (coupon: Coupon) => void;
@@ -12,83 +12,17 @@ interface ICouponFormProps {
 }
 
 const CouponForm = ({ addCoupon, clearCouponForm, setShowCouponForm, couponForm, setCouponForm }: ICouponFormProps) => {
-  /** 알림 훅 사용 */
-  const { showToast } = useNotification();
-
-  /** 쿠폰 폼 필드 업데이트 */
-  const updateField = useCallback(
-    (field: keyof Coupon, value: string | number) => {
-      setCouponForm((prev) => ({ ...prev, [field]: value }));
-    },
-    [setCouponForm]
-  );
-
-  /** 쿠폰명 입력 */
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateField("name", e.target.value);
-    },
-    [updateField]
-  );
-
-  /** 쿠폰 코드 입력 */
-  const handleCodeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      //자동으로 대문자로 변환
-      updateField("code", e.target.value.toUpperCase());
-    },
-    [updateField]
-  );
-
-  /** 할인 타입 선택 */
-  const handleDiscountTypeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      updateField("discountType", e.target.value as "amount" | "percentage");
-    },
-    [updateField]
-  );
-
-  /** 할인값 입력 */
-  const handleDiscountValueChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const processedValue = couponHandlers.processDiscountInput(e.target.value);
-      if (processedValue !== null) {
-        updateField("discountValue", processedValue);
-      }
-    },
-    [updateField]
-  );
-
-  /** 할인값 포커스 해제 시 검증 핸들러 */
-  const handleDiscountValueBlur = useCallback(
-    (e: React.FocusEvent<HTMLInputElement>) => {
-      const validation = validateDiscountValue(parseInt(e.target.value) || 0, couponForm.discountType);
-
-      if (!validation.isValid) {
-        showToast(validation.message!, "error");
-        updateField("discountValue", validation.correctedValue!);
-      }
-    },
-    [couponForm.discountType, updateField, showToast]
-  );
-
-  /** 취소 버튼 클릭 시 폼 초기화 */
-  const handleCancel = useCallback(() => {
-    setShowCouponForm(false);
-    clearCouponForm();
-  }, [setShowCouponForm, clearCouponForm]);
-
   /** 할인 타입에 따른 레이블과 플레이스홀더 설정 */
   const discountConfig = useMemo(() => couponHandlers.getDiscountConfig(couponForm.discountType), [couponForm.discountType]);
 
-  /** 쿠폰 등록 핸들러 */
-  const handleCouponSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // 쿠폰 등록하고 폼 초기화
-    addCoupon(couponForm);
-    handleCancel();
-  };
+  /** 쿠폰 폼 핸들러 사용 */
+  const { handleNameChange, handleCodeChange, handleDiscountTypeChange, handleDiscountValueChange, handleDiscountValueBlur, handleCancel, handleCouponSubmit } = useCouponFormHandlers({
+    setCouponForm,
+    couponForm,
+    setShowCouponForm,
+    clearCouponForm,
+    addCoupon,
+  });
 
   return (
     <div className="mt-6 p-4 bg-gray-50 rounded-lg">

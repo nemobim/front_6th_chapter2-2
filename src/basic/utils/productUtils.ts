@@ -50,9 +50,8 @@ export const PRODUCT_TABLE_HEADERS = [
 const MIN_VALUE = 0; // 최소값
 const MAX_STOCK = 9999; // 최대 재고
 
-const MAX_PRODUCT_NAME_LENGTH = 100; // 상품명 최대 길이
-const MAX_DESCRIPTION_LENGTH = 200; // 설명 최대 길이
-const MAX_DISCOUNT_RATE = 100; // 최대 할인율 (%)
+export const MAX_PRODUCT_NAME_LENGTH = 100; // 상품명 최대 길이
+export const MAX_DESCRIPTION_LENGTH = 200; // 설명 최대 길이
 
 /**
  * 상품 폼 검증 관련 유틸 함수들
