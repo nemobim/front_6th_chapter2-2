@@ -1,23 +1,24 @@
 import { useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
 import { Coupon } from "../../types";
-import { couponsAtom } from "../atoms/couponAtoms";
+import { couponsAtom, selectedCouponAtom } from "../atoms/couponAtoms";
 import { validateCouponApplication, validateCouponCode } from "../utils/couponUtils";
 import { saveDataToStorage } from "../utils/localStorageUtils";
 import { useNotification } from "./useNotification";
 
 interface UseCouponProps {
   cartTotals: { totalBeforeDiscount: number; totalAfterDiscount: number };
-  selectedCoupon: Coupon | null;
-  setSelectedCoupon: (coupon: Coupon | null) => void;
 }
 
-export const useCoupon = ({ cartTotals, selectedCoupon, setSelectedCoupon }: UseCouponProps) => {
+export const useCoupon = ({ cartTotals }: UseCouponProps) => {
   /** 알림 표시 */
   const { showToast } = useNotification();
 
   /** 쿠폰 목록 - Jotai 사용 */
   const [coupons, setCoupons] = useAtom(couponsAtom);
+
+  /** 선택된 쿠폰 - Jotai 사용 */
+  const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
 
   /** 쿠폰 적용 */
   const applyCoupon = useCallback(
@@ -65,7 +66,8 @@ export const useCoupon = ({ cartTotals, selectedCoupon, setSelectedCoupon }: Use
   }, [coupons]);
 
   return {
-    coupons,
+    selectedCoupon,
+    setSelectedCoupon,
     applyCoupon,
     addCoupon,
     deleteCoupon,

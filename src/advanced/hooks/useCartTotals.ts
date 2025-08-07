@@ -1,6 +1,8 @@
 import { useMemo } from "react";
-import { CartItem, Coupon } from "../../types";
+import { CartItem } from "../../types";
 import { calculateDiscount } from "../utils/cartCalculations";
+import { useAtom } from "jotai";
+import { selectedCouponAtom } from "../atoms/couponAtoms";
 
 interface CartTotals {
   totalBeforeDiscount: number;
@@ -9,11 +11,13 @@ interface CartTotals {
 
 interface UseCartTotalsProps {
   cart: CartItem[];
-  selectedCoupon: Coupon | null;
   calculateItemTotal: (item: CartItem) => number;
 }
 
-export const useCartTotals = ({ cart, selectedCoupon, calculateItemTotal }: UseCartTotalsProps): CartTotals => {
+export const useCartTotals = ({ cart, calculateItemTotal }: UseCartTotalsProps): CartTotals => {
+  /** 선택된 쿠폰 - Jotai 사용 */
+  const [selectedCoupon] = useAtom(selectedCouponAtom);
+
   const memoizedCalculateItemTotal = useMemo(() => (item: CartItem) => calculateItemTotal(item), [calculateItemTotal]);
 
   return useMemo(() => {

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Coupon } from "../types";
 import Header from "./components/layout/Header";
 import { useCart } from "./hooks/useCart";
 import { useCartTotals } from "./hooks/useCartTotals";
@@ -25,17 +24,14 @@ const AppContent = () => {
   /** 상품 폼 hook 사용 */
   const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
 
-  /** 선택된 쿠폰 */
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
-
   /** 장바구니 hook 사용 */
   const { cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
 
   /** 장바구니 총액 계산 (할인 포함) */
-  const cartTotals = useCartTotals({ cart, selectedCoupon, calculateItemTotal });
+  const cartTotals = useCartTotals({ cart, calculateItemTotal });
 
   /** 쿠폰 hook 사용 */
-  const { applyCoupon, addCoupon, deleteCoupon } = useCoupon({ cartTotals, selectedCoupon, setSelectedCoupon });
+  const { applyCoupon, addCoupon, deleteCoupon } = useCoupon({ cartTotals });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -72,8 +68,6 @@ const AppContent = () => {
             getRemainingStock={getRemainingStock}
             calculateItemTotal={calculateItemTotal}
             totals={cartTotals}
-            selectedCoupon={selectedCoupon}
-            setSelectedCoupon={setSelectedCoupon}
             applyCoupon={applyCoupon}
           />
         )}

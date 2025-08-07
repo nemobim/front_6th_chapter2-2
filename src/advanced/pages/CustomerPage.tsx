@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
-import { CartItem, Coupon } from "../../types";
+import { CartItem } from "../../types";
 import { CartSidebar } from "../components/customer/cart/CartSidebar";
 import { ProductGrid } from "../components/customer/product/ProductGrid";
 import { useNotification } from "../hooks/useNotification";
@@ -7,7 +7,7 @@ import { useProductSearch } from "../hooks/useProductSearch";
 import { ProductWithUI } from "../types/product";
 import { generateOrderNumber } from "../utils/orderUtils";
 import { useAtom } from "jotai";
-import { couponsAtom } from "../atoms/couponAtoms";
+import { couponsAtom, selectedCouponAtom } from "../atoms/couponAtoms";
 
 interface CustomerPageProps {
   isAdmin: boolean;
@@ -20,9 +20,7 @@ interface CustomerPageProps {
   updateCartQuantity: (productId: string, quantity: number) => void;
   getRemainingStock: (product: ProductWithUI) => number;
   calculateItemTotal: (item: CartItem) => number;
-  selectedCoupon: Coupon | null;
-  setSelectedCoupon: (coupon: Coupon | null) => void;
-  applyCoupon: (coupon: Coupon) => void;
+  applyCoupon: (coupon: any) => void;
   totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
 }
 
@@ -37,13 +35,14 @@ export const CustomerPage = ({
   updateCartQuantity,
   getRemainingStock,
   calculateItemTotal,
-  selectedCoupon,
-  setSelectedCoupon,
   applyCoupon,
   totals,
 }: CustomerPageProps) => {
   /** 쿠폰 목록 - Jotai 사용 */
   const [coupons] = useAtom(couponsAtom);
+
+  /** 선택된 쿠폰 - Jotai 사용 */
+  const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
 
   /** 알림 표시 */
   const { showToast } = useNotification();
