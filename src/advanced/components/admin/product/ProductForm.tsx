@@ -1,17 +1,20 @@
-import { Dispatch, SetStateAction } from "react";
+import { useSetAtom } from "jotai";
 import { NewProductForm } from "../../../types/product";
 import { useProductFormHandlers } from "../../../hooks/useProductFormHandlers";
 import { MAX_DESCRIPTION_LENGTH, MAX_PRODUCT_NAME_LENGTH } from "../../../utils/productUtils";
+import { productFormAtom, editingProductAtom, showProductFormAtom } from "../../../atoms/productAtoms";
 
 interface IProductFormProps {
   productForm: NewProductForm;
   editingProduct: string | null;
   handleProductSubmit: (e: React.FormEvent) => void;
-  setProductForm: Dispatch<SetStateAction<NewProductForm>>;
-  setEditingProduct: Dispatch<SetStateAction<string | null>>;
-  setShowProductForm: Dispatch<SetStateAction<boolean>>;
 }
-const ProductForm = ({ productForm, editingProduct, handleProductSubmit, setProductForm, setEditingProduct, setShowProductForm }: IProductFormProps) => {
+
+const ProductForm = ({ productForm, editingProduct, handleProductSubmit }: IProductFormProps) => {
+  const setProductForm = useSetAtom(productFormAtom);
+  const setEditingProduct = useSetAtom(editingProductAtom);
+  const setShowProductForm = useSetAtom(showProductFormAtom);
+
   /** 상품 폼 핸들러 사용 */
   const {
     handleNameChange,

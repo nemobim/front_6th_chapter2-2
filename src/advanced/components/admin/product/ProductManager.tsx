@@ -10,7 +10,7 @@ const ProductManager = () => {
   const { products, addProduct, updateProduct, deleteProduct } = useProduct();
 
   /** 상품 폼 관련 - useProductForm hook 사용 */
-  const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
+  const { editingProduct, showProductForm, productForm, editProductForm, clearProductForm } = useProductForm();
 
   /** 장바구니 관련 - useCart hook 사용 */
   const { getRemainingStock } = useCart({ products });
@@ -35,23 +35,14 @@ const ProductManager = () => {
 
   return (
     <section className="bg-white rounded-lg border border-gray-200">
-      {/* 헤더 섹션 */}
-      <ProductHeader setEditingProduct={setEditingProduct} setProductForm={setProductForm} setShowProductForm={setShowProductForm} />
+      {/* 헤더 섹션 - props 제거 */}
+      <ProductHeader />
 
-      {/* 상품 테이블 */}
+      {/* 상품 테이블 - props 제거 */}
       <ProductTable products={products} getRemainingStock={getRemainingStock} editProductForm={editProductForm} deleteProduct={deleteProduct} />
 
-      {/* 상품 폼 섹션 */}
-      {showProductForm && (
-        <ProductForm
-          productForm={productForm}
-          editingProduct={editingProduct}
-          handleProductSubmit={handleProductSubmit}
-          setProductForm={setProductForm}
-          setEditingProduct={setEditingProduct}
-          setShowProductForm={setShowProductForm}
-        />
-      )}
+      {/* 상품 폼 섹션 - props 제거 */}
+      {showProductForm && <ProductForm productForm={productForm} editingProduct={editingProduct} handleProductSubmit={handleProductSubmit} />}
     </section>
   );
 };

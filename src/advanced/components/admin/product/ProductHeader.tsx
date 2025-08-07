@@ -1,14 +1,13 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
-import { NewProductForm } from "../../../types/product";
+import { useSetAtom } from "jotai";
+import { useCallback } from "react";
 import { INITIAL_PRODUCT_FORM } from "../../../utils/productUtils";
+import { editingProductAtom, productFormAtom, showProductFormAtom } from "../../../atoms/productAtoms";
 
-interface IProductHeaderProps {
-  setEditingProduct: Dispatch<SetStateAction<string | null>>;
-  setProductForm: Dispatch<SetStateAction<NewProductForm>>;
-  setShowProductForm: Dispatch<SetStateAction<boolean>>;
-}
+const ProductHeader = () => {
+  const setEditingProduct = useSetAtom(editingProductAtom);
+  const setProductForm = useSetAtom(productFormAtom);
+  const setShowProductForm = useSetAtom(showProductFormAtom);
 
-const ProductHeader = ({ setEditingProduct, setProductForm, setShowProductForm }: IProductHeaderProps) => {
   /** 새 상품 추가  */
   const handleAddNewProduct = useCallback(() => {
     setEditingProduct("new");
