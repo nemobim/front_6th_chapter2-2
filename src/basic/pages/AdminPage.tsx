@@ -1,16 +1,12 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
-import { TActiveTab } from "../constants/adminConstants";
-import { NewProductForm, ProductWithUI } from "../types/product";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Coupon } from "../../types";
 import AdminNavigation from "../components/admin/AdminNavigation";
-import ProductManager from "../components/admin/ProductManager";
 import CouponManager from "../components/admin/CouponManager";
+import ProductManager from "../components/admin/ProductManager";
+import { TActiveTab } from "../constants/adminConstants";
+import { NewProductForm, ProductWithUI } from "../types/product";
 
 interface AdminDashboardProps {
-  // 탭 관련
-  activeTab: TActiveTab;
-  setActiveTab: Dispatch<SetStateAction<TActiveTab>>;
-
   // 상품 관련
   products: ProductWithUI[];
   addProduct: (product: NewProductForm) => void;
@@ -33,8 +29,6 @@ interface AdminDashboardProps {
 }
 
 const AdminPage = ({
-  activeTab,
-  setActiveTab,
   products,
   addProduct,
   updateProduct,
@@ -52,22 +46,9 @@ const AdminPage = ({
   deleteCoupon,
   addCoupon,
 }: AdminDashboardProps) => {
-  /** 상품 등록 */
-  const handleProductSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
+  /** 탭 상태 */
+  const [activeTab, setActiveTab] = useState<TActiveTab>("products");
 
-      const isEditMode = editingProduct && editingProduct !== "new";
-      if (isEditMode) {
-        updateProduct(editingProduct, productForm);
-      } else {
-        addProduct(productForm);
-      }
-
-      clearProductForm();
-    },
-    [editingProduct, productForm, updateProduct, addProduct, clearProductForm]
-  );
   return (
     <div className="max-w-6xl mx-auto">
       {/* 관리자 대시보드 헤더 */}
@@ -85,7 +66,9 @@ const AdminPage = ({
           products={products}
           isAdmin={true}
           activeTab={activeTab}
-          handleProductSubmit={handleProductSubmit}
+          addProduct={addProduct}
+          updateProduct={updateProduct}
+          clearProductForm={clearProductForm}
           productForm={productForm}
           editingProduct={editingProduct}
           showProductForm={showProductForm}

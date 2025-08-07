@@ -17,9 +17,6 @@ const AppContent = () => {
   /** 관리자 상태 여부 */
   const [isAdmin, setIsAdmin] = useState(false);
 
-  /** 탭 상태 */
-  const [activeTab, setActiveTab] = useState<TActiveTab>("products");
-
   /** 검색어 설정 */
   const { searchTerm, setSearchTerm, debouncedSearchTerm } = useSearch();
 
@@ -47,8 +44,6 @@ const AppContent = () => {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
             products={products}
             addProduct={addProduct}
             updateProduct={updateProduct}

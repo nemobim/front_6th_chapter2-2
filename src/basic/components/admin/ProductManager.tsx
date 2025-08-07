@@ -13,7 +13,9 @@ interface IProductManagementTableProps {
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
   editProductForm: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
-  handleProductSubmit: (e: React.FormEvent) => void;
+  addProduct: (product: NewProductForm) => void;
+  updateProduct: (productId: string, product: NewProductForm) => void;
+  clearProductForm: () => void;
   productForm: NewProductForm;
   editingProduct: string | null;
   showProductForm: boolean;
@@ -29,13 +31,34 @@ const ProductManager = ({
   setShowProductForm,
   editProductForm,
   deleteProduct,
-  handleProductSubmit,
+  addProduct,
+  updateProduct,
+  clearProductForm,
   productForm,
   editingProduct,
   showProductForm,
   getRemainingStock,
 }: IProductManagementTableProps) => {
   const { showToast } = useNotification();
+
+  /** 상품 등록 */
+  const handleProductSubmit = (e: React.FormEvent) => {
+    // 이벤트 전파 방지
+    e.preventDefault();
+
+    // 수정 모드인지 확인
+    const isEditMode = editingProduct && editingProduct !== "new";
+    if (isEditMode) {
+      // 수정 모드인 경우 상품 업데이트
+      updateProduct(editingProduct, productForm);
+    } else {
+      // 새 상품 등록
+      addProduct(productForm);
+    }
+
+    clearProductForm();
+  };
+
   return (
     <section className="bg-white rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200">
