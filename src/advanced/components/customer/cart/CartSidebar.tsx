@@ -1,16 +1,11 @@
 import { useAtom } from "jotai";
-import { useCallback } from "react";
 import { cartAtom } from "../../../atoms/cartAtoms";
-import { useCart } from "../../../hooks/useCart";
-import { useProduct } from "../../../hooks/useProduct";
 import { BagIcon, EmptyCartIcon } from "../../elements/Icons";
 import { CouponSection } from "../CouponSection";
 import { PaymentSection } from "../PaymentSection";
 import CartItemBox from "./CartItemBox";
 
-interface CartSidebarProps {}
-
-export const CartSidebar = ({}: CartSidebarProps) => {
+export const CartSidebar = () => {
   /** 장바구니 상태 - Jotai 사용 */
   const [cart] = useAtom(cartAtom);
 

@@ -1,19 +1,19 @@
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { cartAtom } from "../../atoms/cartAtoms";
 import { selectedCouponAtom } from "../../atoms/couponAtoms";
 import { useCart } from "../../hooks/useCart";
 import { useCartTotals } from "../../hooks/useCartTotals";
-import { useProduct } from "../../hooks/useProduct";
 import { useNotification } from "../../hooks/useNotification";
+import { useProduct } from "../../hooks/useProduct";
 import { generateOrderNumber } from "../../utils/orderUtils";
 
 export const PaymentSection = () => {
   /** 장바구니 상태 - Jotai 사용 */
-  const [cart, setCart] = useAtom(cartAtom);
+  const setCart = useSetAtom(cartAtom);
 
   /** 선택된 쿠폰 - Jotai 사용 */
-  const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
+  const setSelectedCoupon = useSetAtom(selectedCouponAtom);
 
   /** 상품 데이터 - useProduct hook 사용 */
   const { products } = useProduct();
