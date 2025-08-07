@@ -11,7 +11,6 @@ import { CustomerPage } from "./pages/CustomerPage";
 import { useAtom } from "jotai";
 import { isAdminAtom } from "./atoms/adminAtoms";
 
-// 메인 앱 컴포넌트 (NotificationProvider 내부에서 실행)
 const AppContent = () => {
   /** 관리자 상태 여부 - Jotai 사용 */
   const [isAdmin] = useAtom(isAdminAtom);
@@ -23,7 +22,7 @@ const AppContent = () => {
   const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
 
   /** 장바구니 hook 사용 */
-  const { setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal } = useCart({ products });
+  const { addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal } = useCart({ products });
 
   /** 장바구니 총액 계산 (할인 포함) - Hook 사용 */
   const cartTotals = useCartTotals({ calculateItemTotal });
@@ -56,7 +55,6 @@ const AppContent = () => {
         ) : (
           <CustomerPage
             products={products}
-            setCart={setCart}
             addToCart={addToCart}
             removeFromCart={removeFromCart}
             updateCartQuantity={updateCartQuantity}
@@ -71,7 +69,6 @@ const AppContent = () => {
   );
 };
 
-// 루트 앱 컴포넌트 (Provider로 감싸기)
 const App = () => {
   return (
     <Provider>

@@ -2,6 +2,9 @@ import { useAtom } from "jotai";
 import { cartAtom } from "../../../atoms/cartAtoms";
 import { couponsAtom, selectedCouponAtom } from "../../../atoms/couponAtoms";
 import { CartItem, Coupon } from "../../../../types";
+import { useNotification } from "../../../hooks/useNotification";
+import { generateOrderNumber } from "../../../utils/orderUtils";
+import { useCallback } from "react";
 import CartItemBox from "./CartItemBox";
 import { CouponSection } from "../CouponSection";
 import { PaymentSection } from "../PaymentSection";
@@ -13,18 +16,28 @@ interface CartSidebarProps {
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
   applyCoupon: (coupon: Coupon) => void;
-  completeOrder: () => void;
 }
 
-export const CartSidebar = ({ totals, calculateItemTotal, removeFromCart, updateCartQuantity, applyCoupon, completeOrder }: CartSidebarProps) => {
+export const CartSidebar = ({ totals, calculateItemTotal, removeFromCart, updateCartQuantity, applyCoupon }: CartSidebarProps) => {
   /** 장바구니 상태 - Jotai 사용 */
-  const [cart] = useAtom(cartAtom);
+  const [cart, setCart] = useAtom(cartAtom);
 
   /** 쿠폰 목록 - Jotai 사용 */
   const [coupons] = useAtom(couponsAtom);
 
   /** 선택된 쿠폰 - Jotai 사용 */
   const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
+
+  /** 알림 표시 */
+  const { showToast } = useNotification();
+
+  /** 주문 완료 */
+  const completeOrder = useCallback(() => {
+    const orderNumber = generateOrderNumber();
+    showToast(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
+    setCart([]);
+    setSelectedCoupon(null);
+  }, [showToast, setCart, setSelectedCoupon]);
 
   return (
     <div className="sticky top-24 space-y-4">
