@@ -8,13 +8,10 @@ import { ProductWithUI } from "../types/product";
 interface CustomerPageProps {
   products: ProductWithUI[];
   addToCart: (product: ProductWithUI) => void;
-  removeFromCart: (productId: string) => void;
-  updateCartQuantity: (productId: string, quantity: number) => void;
   getRemainingStock: (product: ProductWithUI) => number;
-  calculateItemTotal: (item: CartItem) => number;
 }
 
-export const CustomerPage = ({ products, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal }: CustomerPageProps) => {
+export const CustomerPage = ({ products, addToCart, getRemainingStock }: CustomerPageProps) => {
   /** 검색어 설정 - Jotai 사용 */
   const { debouncedSearchTerm } = useSearch();
 
@@ -30,7 +27,7 @@ export const CustomerPage = ({ products, addToCart, removeFromCart, updateCartQu
         <ProductGrid products={products} filteredProducts={filteredProducts} debouncedSearchTerm={debouncedSearchTerm} getRemainingStock={getRemainingStock} addToCart={addToCart} />
       </div>
       <div className="lg:col-span-1">
-        <CartSidebar calculateItemTotal={calculateItemTotal} removeFromCart={removeFromCart} updateCartQuantity={updateCartQuantity} />
+        <CartSidebar />
       </div>
     </div>
   );

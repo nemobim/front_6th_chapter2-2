@@ -4,6 +4,8 @@ import { couponsAtom, selectedCouponAtom } from "../../../atoms/couponAtoms";
 import { CartItem, Coupon } from "../../../../types";
 import { useNotification } from "../../../hooks/useNotification";
 import { useCartTotals } from "../../../hooks/useCartTotals";
+import { useCart } from "../../../hooks/useCart";
+import { useProduct } from "../../../hooks/useProduct";
 import { validateCouponApplication } from "../../../utils/couponUtils";
 import { generateOrderNumber } from "../../../utils/orderUtils";
 import { useCallback } from "react";
@@ -12,13 +14,9 @@ import { CouponSection } from "../CouponSection";
 import { PaymentSection } from "../PaymentSection";
 import { BagIcon, EmptyCartIcon } from "../../elements/Icons";
 
-interface CartSidebarProps {
-  calculateItemTotal: (item: CartItem) => number;
-  removeFromCart: (productId: string) => void;
-  updateCartQuantity: (productId: string, quantity: number) => void;
-}
+interface CartSidebarProps {}
 
-export const CartSidebar = ({ calculateItemTotal, removeFromCart, updateCartQuantity }: CartSidebarProps) => {
+export const CartSidebar = ({}: CartSidebarProps) => {
   /** 장바구니 상태 - Jotai 사용 */
   const [cart, setCart] = useAtom(cartAtom);
 
@@ -27,6 +25,12 @@ export const CartSidebar = ({ calculateItemTotal, removeFromCart, updateCartQuan
 
   /** 선택된 쿠폰 - Jotai 사용 */
   const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
+
+  /** 상품 데이터 - useProduct hook 사용 */
+  const { products } = useProduct();
+
+  /** 장바구니 관련 actions - useCart hook 사용 */
+  const { calculateItemTotal, removeFromCart, updateCartQuantity } = useCart({ products });
 
   /** 장바구니 총액 계산 - 직접 hook 사용 */
   const totals = useCartTotals({ calculateItemTotal });
