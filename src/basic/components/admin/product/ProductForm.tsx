@@ -27,7 +27,6 @@ const ProductForm = ({ productForm, editingProduct, handleProductSubmit, setProd
     handleCancel,
   } = useProductFormHandlers({
     setProductForm,
-    productForm,
     setEditingProduct,
     setShowProductForm,
   });

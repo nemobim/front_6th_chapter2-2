@@ -5,12 +5,11 @@ import { DISCOUNT_OPTIONS, INITIAL_PRODUCT_FORM, processNumericInput, productVal
 
 interface IUseProductFormHandlersProps {
   setProductForm: Dispatch<SetStateAction<NewProductForm>>;
-  productForm: NewProductForm;
   setEditingProduct: Dispatch<SetStateAction<string | null>>;
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
 }
 
-export const useProductFormHandlers = ({ setProductForm, productForm, setEditingProduct, setShowProductForm }: IUseProductFormHandlersProps) => {
+export const useProductFormHandlers = ({ setProductForm, setEditingProduct, setShowProductForm }: IUseProductFormHandlersProps) => {
   const { showToast } = useNotification();
   /** 상품 폼 업데이트 */
   const updateField = useCallback(
