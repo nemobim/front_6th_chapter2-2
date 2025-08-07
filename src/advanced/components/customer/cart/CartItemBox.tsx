@@ -1,14 +1,19 @@
+import { useCart } from "../../../hooks/useCart";
+import { useProduct } from "../../../hooks/useProduct";
 import { CartItem } from "../../../../types";
 import { CloseIcon } from "../../elements/Icons";
 
 interface CartItemProps {
   item: CartItem;
-  calculateItemTotal: (item: CartItem) => number;
-  onRemove: (productId: string) => void;
-  onUpdateQuantity: (productId: string, quantity: number) => void;
 }
 
-const CartItemBox = ({ item, calculateItemTotal, onRemove, onUpdateQuantity }: CartItemProps) => {
+const CartItemBox = ({ item }: CartItemProps) => {
+  /** 상품 데이터 - useProduct hook 사용 */
+  const { products } = useProduct();
+
+  /** 장바구니 관련 actions - useCart hook 사용 */
+  const { calculateItemTotal, removeFromCart, updateCartQuantity } = useCart({ products });
+
   /** 총 가격 계산 */
   const itemTotal = calculateItemTotal(item);
   /** 원래 가격 */
@@ -22,18 +27,18 @@ const CartItemBox = ({ item, calculateItemTotal, onRemove, onUpdateQuantity }: C
     <div className="border-b pb-3 last:border-b-0">
       <div className="flex justify-between items-start mb-2">
         <h4 className="text-sm font-medium text-gray-900 flex-1">{item.product.name}</h4>
-        <button onClick={() => onRemove(item.product.id)} className="text-gray-400 hover:text-red-500 ml-2">
+        <button onClick={() => removeFromCart(item.product.id)} className="text-gray-400 hover:text-red-500 ml-2">
           <CloseIcon />
         </button>
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <button onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)} className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+          <button onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)} className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100">
             <span className="text-xs">−</span>
           </button>
           <span className="mx-3 text-sm font-medium w-8 text-center">{item.quantity}</span>
-          <button onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)} className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+          <button onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)} className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100">
             <span className="text-xs">+</span>
           </button>
         </div>

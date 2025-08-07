@@ -30,7 +30,7 @@ export const CartSidebar = ({}: CartSidebarProps) => {
   const { products } = useProduct();
 
   /** 장바구니 관련 actions - useCart hook 사용 */
-  const { calculateItemTotal, removeFromCart, updateCartQuantity } = useCart({ products });
+  const { calculateItemTotal } = useCart({ products });
 
   /** 장바구니 총액 계산 - 직접 hook 사용 */
   const totals = useCartTotals({ calculateItemTotal });
@@ -78,7 +78,7 @@ export const CartSidebar = ({}: CartSidebarProps) => {
         ) : (
           <div className="space-y-3">
             {cart.map((item) => (
-              <CartItemBox key={item.product.id} item={item} calculateItemTotal={calculateItemTotal} onRemove={removeFromCart} onUpdateQuantity={updateCartQuantity} />
+              <CartItemBox key={item.product.id} item={item} />
             ))}
           </div>
         )}
