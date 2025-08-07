@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
-import { CartItem } from "../../types";
+import { CartItem, Coupon } from "../../types";
 import { CartSidebar } from "../components/customer/cart/CartSidebart";
 import { ProductGrid } from "../components/customer/product/ProductGrid";
 import { useNotification } from "../hooks/useNotification";
@@ -18,10 +18,10 @@ interface CustomerPageProps {
   updateCartQuantity: (productId: string, quantity: number) => void;
   getRemainingStock: (product: ProductWithUI) => number;
   calculateItemTotal: (item: CartItem) => number;
-  coupons: any[];
-  selectedCoupon: any;
-  applyCoupon: (coupon: any) => void;
-  setSelectedCoupon: (coupon: any) => void;
+  coupons: Coupon[];
+  selectedCoupon: Coupon | null;
+  applyCoupon: (coupon: Coupon) => void;
+  setSelectedCoupon: (coupon: Coupon | null) => void;
   totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
 }
 
