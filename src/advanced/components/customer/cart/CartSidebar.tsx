@@ -2,12 +2,11 @@ import { useAtom } from "jotai";
 import { useCallback } from "react";
 import { Coupon } from "../../../../types";
 import { cartAtom } from "../../../atoms/cartAtoms";
-import { couponsAtom, selectedCouponAtom } from "../../../atoms/couponAtoms";
+import { selectedCouponAtom } from "../../../atoms/couponAtoms";
 import { useCart } from "../../../hooks/useCart";
 import { useCartTotals } from "../../../hooks/useCartTotals";
 import { useNotification } from "../../../hooks/useNotification";
 import { useProduct } from "../../../hooks/useProduct";
-import { validateCouponApplication } from "../../../utils/couponUtils";
 import { generateOrderNumber } from "../../../utils/orderUtils";
 import { BagIcon, EmptyCartIcon } from "../../elements/Icons";
 import { CouponSection } from "../CouponSection";
@@ -19,9 +18,6 @@ interface CartSidebarProps {}
 export const CartSidebar = ({}: CartSidebarProps) => {
   /** 장바구니 상태 - Jotai 사용 */
   const [cart, setCart] = useAtom(cartAtom);
-
-  /** 쿠폰 목록 - Jotai 사용 */
-  const [coupons] = useAtom(couponsAtom);
 
   /** 선택된 쿠폰 - Jotai 사용 */
   const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
@@ -37,22 +33,6 @@ export const CartSidebar = ({}: CartSidebarProps) => {
 
   /** 알림 표시 */
   const { showToast } = useNotification();
-
-  /** 쿠폰 적용 - 내부에서 직접 구현 */
-  const applyCoupon = useCallback(
-    (coupon: Coupon) => {
-      const currentTotal = totals.totalAfterDiscount;
-      // 쿠폰 적용 가능 여부 검증
-      if (!validateCouponApplication(coupon, currentTotal)) {
-        return showToast("percentage 쿠폰은 10,000원 이상 구매 시 사용 가능합니다.", "error");
-      }
-
-      // 쿠폰 적용 허용
-      setSelectedCoupon(coupon);
-      showToast("쿠폰이 적용되었습니다.", "success");
-    },
-    [totals.totalAfterDiscount, setSelectedCoupon, showToast]
-  );
 
   /** 주문 완료 */
   const completeOrder = useCallback(() => {
@@ -86,7 +66,7 @@ export const CartSidebar = ({}: CartSidebarProps) => {
 
       {cart.length > 0 && (
         <>
-          <CouponSection coupons={coupons} selectedCoupon={selectedCoupon} onApplyCoupon={applyCoupon} onSetSelectedCoupon={setSelectedCoupon} />
+          <CouponSection />
           <PaymentSection totals={totals} onCompleteOrder={completeOrder} />
         </>
       )}
