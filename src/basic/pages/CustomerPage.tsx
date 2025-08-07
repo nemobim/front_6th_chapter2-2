@@ -2,11 +2,15 @@ import { ProductWithUI } from "../types/product";
 import { CartItem } from "../../types";
 import { useProductSearch } from "../hooks/useProductSearch";
 import { formatPrice } from "../utils/productUtils";
+import { Dispatch, SetStateAction, useCallback } from "react";
+import { generateOrderNumber } from "../utils/orderUtils";
+import { useNotification } from "../hooks/useNotification";
 
 interface CustomerPageProps {
   isAdmin: boolean;
   products: ProductWithUI[];
   cart: CartItem[];
+  setCart: Dispatch<SetStateAction<CartItem[]>>;
   debouncedSearchTerm: string;
   addToCart: (product: ProductWithUI) => void;
   removeFromCart: (productId: string) => void;
@@ -17,7 +21,6 @@ interface CustomerPageProps {
   selectedCoupon: any;
   applyCoupon: (coupon: any) => void;
   setSelectedCoupon: (coupon: any) => void;
-  completeOrder: () => void;
   totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
 }
 
@@ -25,6 +28,7 @@ export const CustomerPage = ({
   isAdmin,
   products,
   cart,
+  setCart,
   debouncedSearchTerm,
   addToCart,
   removeFromCart,
@@ -35,14 +39,24 @@ export const CustomerPage = ({
   selectedCoupon,
   applyCoupon,
   setSelectedCoupon,
-  completeOrder,
   totals,
 }: CustomerPageProps) => {
+  /** 알림 표시 */
+  const { showToast } = useNotification();
+
   /** 상품 필터링 hook 사용 */
   const filteredProducts = useProductSearch({
     products,
     searchTerm: debouncedSearchTerm,
   });
+
+  /** 주문 완료 */
+  const completeOrder = useCallback(() => {
+    const orderNumber = generateOrderNumber();
+    showToast(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
+    setCart([]);
+    setSelectedCoupon(null);
+  }, [showToast, setCart, setSelectedCoupon]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

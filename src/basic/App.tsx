@@ -1,18 +1,16 @@
-import { useState, useCallback, useMemo } from "react";
-import AdminNavigation from "./components/admin/AdminNavigation";
-import CouponManager from "./components/admin/CouponManager";
-import ProductManager from "./components/admin/ProductManager";
+import { useState } from "react";
+import { Coupon } from "../types";
 import Header from "./components/layout/Header";
 import { TActiveTab } from "./constants/adminConstants";
 import { useCart } from "./hooks/useCart";
+import { useCartTotals } from "./hooks/useCartTotals";
 import { useCoupon } from "./hooks/useCoupon";
-import { NotificationProvider, useNotification } from "./hooks/useNotification";
+import { NotificationProvider } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
-import { useSearch } from "./hooks/useSearch";
 import { useProductForm } from "./hooks/useProductForm";
+import { useSearch } from "./hooks/useSearch";
+import AdminPage from "./pages/AdminPage";
 import { CustomerPage } from "./pages/CustomerPage";
-import { generateOrderNumber } from "./utils/orderUtils";
-import { Coupon } from "../types";
 
 // 메인 앱 컴포넌트 (NotificationProvider 내부에서 실행)
 const AppContent = () => {
@@ -31,23 +29,6 @@ const AppContent = () => {
   /** 상품 폼 hook 사용 */
   const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
 
-  /** 상품 등록 */
-  const handleProductSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-
-      const isEditMode = editingProduct && editingProduct !== "new";
-      if (isEditMode) {
-        updateProduct(editingProduct, productForm);
-      } else {
-        addProduct(productForm);
-      }
-
-      clearProductForm();
-    },
-    [editingProduct, productForm, updateProduct, addProduct, clearProductForm]
-  );
-
   /** 선택된 쿠폰 */
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
@@ -55,83 +36,42 @@ const AppContent = () => {
   const { cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
 
   /** 장바구니 총액 계산 (할인 포함) */
-  const cartTotals = useMemo(() => {
-    let totalBeforeDiscount = 0;
-    let totalAfterDiscount = 0;
-
-    cart.forEach((item) => {
-      const itemPrice = item.product.price * item.quantity;
-      totalBeforeDiscount += itemPrice;
-      totalAfterDiscount += calculateItemTotal(item);
-    });
-
-    if (selectedCoupon) {
-      if (selectedCoupon.discountType === "amount") {
-        totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-      } else {
-        totalAfterDiscount = Math.round(totalAfterDiscount * (1 - selectedCoupon.discountValue / 100));
-      }
-    }
-
-    return {
-      totalBeforeDiscount: Math.round(totalBeforeDiscount),
-      totalAfterDiscount: Math.round(totalAfterDiscount),
-    };
-  }, [cart, selectedCoupon]);
+  const cartTotals = useCartTotals({ cart, selectedCoupon, calculateItemTotal });
 
   /** 쿠폰 hook 사용 */
   const { coupons, applyCoupon, addCoupon, deleteCoupon } = useCoupon({ cartTotals, selectedCoupon, setSelectedCoupon });
-
-  /** 알림 표시 */
-  const { showToast } = useNotification();
-
-  /** 주문 완료 */
-  const completeOrder = useCallback(() => {
-    const orderNumber = generateOrderNumber();
-    showToast(`주문이 완료되었습니다. 주문번호: ${orderNumber}`, "success");
-    setCart([]);
-    setSelectedCoupon(null);
-  }, [showToast, setCart, setSelectedCoupon]);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header isAdmin={isAdmin} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setIsAdmin={setIsAdmin} totalItemCount={totalItemCount} />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
-          <div className="max-w-6xl mx-auto">
-            {/* 관리자 대시보드 헤더 */}
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold text-gray-900">관리자 대시보드</h1>
-              <p className="text-gray-600 mt-1">상품과 쿠폰을 관리할 수 있습니다</p>
-            </div>
-            {/* 탭 네비게이션 */}
-            <AdminNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-            {/* 상품 관리 */}
-            {activeTab === "products" ? (
-              <ProductManager
-                products={products}
-                isAdmin={isAdmin}
-                activeTab={activeTab}
-                handleProductSubmit={handleProductSubmit}
-                productForm={productForm}
-                editingProduct={editingProduct}
-                showProductForm={showProductForm}
-                setEditingProduct={setEditingProduct}
-                setProductForm={setProductForm}
-                setShowProductForm={setShowProductForm}
-                editProductForm={editProductForm}
-                deleteProduct={deleteProduct}
-                getRemainingStock={getRemainingStock}
-              />
-            ) : (
-              <CouponManager coupons={coupons} deleteCoupon={deleteCoupon} addCoupon={addCoupon} />
-            )}
-          </div>
+          <AdminPage
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            products={products}
+            addProduct={addProduct}
+            updateProduct={updateProduct}
+            clearProductForm={clearProductForm}
+            productForm={productForm}
+            editingProduct={editingProduct}
+            showProductForm={showProductForm}
+            setEditingProduct={setEditingProduct}
+            setProductForm={setProductForm}
+            setShowProductForm={setShowProductForm}
+            editProductForm={editProductForm}
+            deleteProduct={deleteProduct}
+            getRemainingStock={getRemainingStock}
+            coupons={coupons}
+            deleteCoupon={deleteCoupon}
+            addCoupon={addCoupon}
+          />
         ) : (
           <CustomerPage
             isAdmin={isAdmin}
             products={products}
             cart={cart}
+            setCart={setCart}
             debouncedSearchTerm={debouncedSearchTerm}
             addToCart={addToCart}
             removeFromCart={removeFromCart}
@@ -143,7 +83,6 @@ const AppContent = () => {
             selectedCoupon={selectedCoupon}
             setSelectedCoupon={setSelectedCoupon}
             applyCoupon={applyCoupon}
-            completeOrder={completeOrder}
           />
         )}
       </main>
