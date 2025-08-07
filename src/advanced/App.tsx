@@ -1,8 +1,6 @@
 import { Provider } from "jotai";
 import Header from "./components/layout/Header";
 import { useCart } from "./hooks/useCart";
-import { useCartTotals } from "./hooks/useCartTotals";
-import { useCoupon } from "./hooks/useCoupon";
 import { NotificationProvider } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
 import { useProductForm } from "./hooks/useProductForm";
@@ -24,12 +22,6 @@ const AppContent = () => {
   /** 장바구니 hook 사용 (AdminPage에서만 필요) */
   const { getRemainingStock } = useCart({ products });
 
-  /** 장바구니 총액 계산 (AdminPage의 쿠폰 관리용) */
-  const cartTotals = useCartTotals({ calculateItemTotal: () => 0 }); // 임시
-
-  /** 쿠폰 hook 사용 (AdminPage에서만 필요) */
-  const { addCoupon, deleteCoupon } = useCoupon({ cartTotals });
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -49,8 +41,6 @@ const AppContent = () => {
             editProductForm={editProductForm}
             deleteProduct={deleteProduct}
             getRemainingStock={getRemainingStock}
-            deleteCoupon={deleteCoupon}
-            addCoupon={addCoupon}
           />
         ) : (
           <CustomerPage />

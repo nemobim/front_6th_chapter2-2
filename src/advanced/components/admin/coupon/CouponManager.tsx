@@ -1,16 +1,22 @@
-import { Coupon } from "../../../../types";
+import { useAtom } from "jotai";
+import { couponsAtom } from "../../../atoms/couponAtoms";
+import { useCoupon } from "../../../hooks/useCoupon";
 import { useCouponForm } from "../../../hooks/useCouponForm";
+import { useCartTotals } from "../../../hooks/useCartTotals";
 import { AddIcon } from "../../elements/Icons";
 import CouponCard from "./CouponCard";
 import CouponForm from "./CouponForm";
 
-interface ICouponManagementTableProps {
-  coupons: Coupon[];
-  addCoupon: (coupon: Coupon) => void;
-  deleteCoupon: (couponCode: string) => void;
-}
+const CouponManager = () => {
+  /** 쿠폰 목록 - Jotai 사용 */
+  const [coupons] = useAtom(couponsAtom);
 
-const CouponManager = ({ coupons, deleteCoupon, addCoupon }: ICouponManagementTableProps) => {
+  /** 장바구니 총액 계산 (쿠폰 관리용) */
+  const cartTotals = useCartTotals({ calculateItemTotal: () => 0 });
+
+  /** 쿠폰 관련 actions - useCoupon hook 사용 */
+  const { addCoupon, deleteCoupon } = useCoupon({ cartTotals });
+
   /** 쿠폰 등록 폼 hook 사용 */
   const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, clearCouponForm } = useCouponForm();
 
