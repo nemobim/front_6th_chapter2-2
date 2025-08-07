@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { CartItem } from "../../types";
 import { ProductWithUI } from "../types/product";
 import { useNotification } from "./useNotification";
@@ -21,10 +21,11 @@ export const useCart = ({ products }: UseCartProps) => {
   const [totalItemCount, setTotalItemCount] = useState(0);
 
   /** 재고 계산 */
-  const getRemainingStock = useCallback(
-    (product: ProductWithUI): number => {
-      return calculateRemainingStock(product, cart);
-    },
+  const getRemainingStock = useMemo(
+    () =>
+      (product: ProductWithUI): number => {
+        return calculateRemainingStock(product, cart);
+      },
     [cart]
   );
 

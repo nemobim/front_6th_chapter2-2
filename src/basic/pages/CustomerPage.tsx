@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { CartItem, Coupon } from "../../types";
-import { CartSidebar } from "../components/customer/cart/CartSidebart";
+import { CartSidebar } from "../components/customer/cart/CartSidebar";
 import { ProductGrid } from "../components/customer/product/ProductGrid";
 import { useNotification } from "../hooks/useNotification";
 import { useProductSearch } from "../hooks/useProductSearch";
