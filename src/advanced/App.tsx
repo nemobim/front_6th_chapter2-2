@@ -60,7 +60,6 @@ const AppContent = () => {
             updateCartQuantity={updateCartQuantity}
             getRemainingStock={getRemainingStock}
             calculateItemTotal={calculateItemTotal}
-            totals={cartTotals}
             applyCoupon={applyCoupon}
           />
         )}
