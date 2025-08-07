@@ -99,27 +99,33 @@ export const useProductFormHandlers = ({ setProductForm, productForm, setEditing
   /** 할인 비율 변경 */
   const handleDiscountRateChange = useCallback(
     (index: number, value: string) => {
-      const newDiscounts = [...productForm.discounts];
-      newDiscounts[index].rate = (parseInt(value) || 0) / 100;
-      updateField("discounts", newDiscounts);
+      setProductForm((prev) => {
+        const newDiscounts = [...prev.discounts];
+        newDiscounts[index].rate = (parseInt(value) || 0) / 100;
+        return { ...prev, discounts: newDiscounts };
+      });
     },
-    [productForm.discounts, updateField]
+    [setProductForm]
   );
 
   /** 할인 제거 */
   const handleRemoveDiscount = useCallback(
     (index: number) => {
-      const newDiscounts = productForm.discounts.filter((_, i) => i !== index);
-      updateField("discounts", newDiscounts);
+      setProductForm((prev) => ({
+        ...prev,
+        discounts: prev.discounts.filter((_, i) => i !== index),
+      }));
     },
-    [productForm.discounts, updateField]
+    [setProductForm]
   );
 
   /** 할인 추가 */
   const handleAddDiscount = useCallback(() => {
-    const newDiscount = DISCOUNT_OPTIONS.DEFAULT_DISCOUNT;
-    updateField("discounts", [...productForm.discounts, newDiscount]);
-  }, [productForm.discounts, updateField]);
+    setProductForm((prev) => ({
+      ...prev,
+      discounts: [...prev.discounts, DISCOUNT_OPTIONS.DEFAULT_DISCOUNT],
+    }));
+  }, [setProductForm]);
 
   /**상품 추가 취소 */
   const handleCancel = useCallback(() => {

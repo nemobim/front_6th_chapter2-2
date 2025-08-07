@@ -12,8 +12,8 @@ interface CartSidebarProps {
   calculateItemTotal: (item: CartItem) => number;
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
-  applyCoupon: (coupon: any) => void;
-  setSelectedCoupon: (coupon: any) => void;
+  applyCoupon: (coupon: Coupon) => void;
+  setSelectedCoupon: (coupon: Coupon | null) => void;
   completeOrder: () => void;
 }
 
