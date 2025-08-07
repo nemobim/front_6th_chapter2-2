@@ -65,7 +65,6 @@ const AdminPage = ({
         <ProductManager
           products={products}
           isAdmin={true}
-          activeTab={activeTab}
           addProduct={addProduct}
           updateProduct={updateProduct}
           clearProductForm={clearProductForm}

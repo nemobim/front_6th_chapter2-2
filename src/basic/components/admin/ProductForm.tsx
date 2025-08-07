@@ -1,0 +1,251 @@
+import { Dispatch, SetStateAction, useCallback } from "react";
+import { NewProductForm } from "../../types/product";
+import { DISCOUNT_OPTIONS, INITIAL_PRODUCT_FORM, processNumericInput, productValidation } from "../../utils/productUtils";
+import { useNotification } from "../../hooks/useNotification";
+
+interface IProductFormProps {
+  productForm: NewProductForm;
+  editingProduct: string | null;
+  handleProductSubmit: (e: React.FormEvent) => void;
+  setProductForm: Dispatch<SetStateAction<NewProductForm>>;
+  setEditingProduct: Dispatch<SetStateAction<string | null>>;
+  setShowProductForm: Dispatch<SetStateAction<boolean>>;
+}
+const ProductForm = ({ productForm, editingProduct, handleProductSubmit, setProductForm, setEditingProduct, setShowProductForm }: IProductFormProps) => {
+  const { showToast } = useNotification();
+  /** 상품 폼 업데이트 */
+  const updateField = useCallback(
+    <K extends keyof NewProductForm>(field: K, value: NewProductForm[K]) => {
+      setProductForm((prev) => ({ ...prev, [field]: value }));
+    },
+    [setProductForm]
+  );
+
+  /** 상품명 입력 핸들러 */
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateField("name", e.target.value);
+    },
+    [updateField]
+  );
+
+  /** 설명 입력 핸들러 */
+  const handleDescriptionChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateField("description", e.target.value);
+    },
+    [updateField]
+  );
+
+  /** 가격 입력 (숫자만 허용) */
+  const handlePriceChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const processedValue = processNumericInput(e.target.value);
+      if (processedValue !== null) {
+        updateField("price", processedValue);
+      }
+    },
+    [updateField]
+  );
+
+  /** 가격 포커스 해제 시 검증 */
+  const handlePriceBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      const validation = productValidation.validatePrice(parseInt(e.target.value) || 0);
+
+      if (!validation.isValid) {
+        showToast(validation.message!, "error");
+        updateField("price", validation.correctedValue!);
+      }
+    },
+    [updateField, showToast]
+  );
+
+  /** 재고 입력 (숫자만 허용) */
+  const handleStockChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const processedValue = processNumericInput(e.target.value);
+      if (processedValue !== null) {
+        updateField("stock", processedValue);
+      }
+    },
+    [updateField]
+  );
+
+  /** 재고 포커스 해제 시 검증 */
+  const handleStockBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      const validation = productValidation.validateStock(parseInt(e.target.value) || 0);
+
+      if (!validation.isValid) {
+        showToast(validation.message!, "error");
+        updateField("stock", validation.correctedValue!);
+      }
+    },
+    [updateField, showToast]
+  );
+
+  /** 할인 수량 변경 */
+  const handleDiscountQuantityChange = useCallback(
+    (index: number, value: string) => {
+      const newDiscounts = [...productForm.discounts];
+      newDiscounts[index].quantity = parseInt(value) || 0;
+      updateField("discounts", newDiscounts);
+    },
+    [productForm.discounts, updateField]
+  );
+
+  /** 할인 비율 변경 */
+  const handleDiscountRateChange = useCallback(
+    (index: number, value: string) => {
+      const newDiscounts = [...productForm.discounts];
+      newDiscounts[index].rate = (parseInt(value) || 0) / 100;
+      updateField("discounts", newDiscounts);
+    },
+    [productForm.discounts, updateField]
+  );
+
+  /** 할인 제거 */
+  const handleRemoveDiscount = useCallback(
+    (index: number) => {
+      const newDiscounts = productForm.discounts.filter((_, i) => i !== index);
+      updateField("discounts", newDiscounts);
+    },
+    [productForm.discounts, updateField]
+  );
+
+  /** 할인 추가 */
+  const handleAddDiscount = useCallback(() => {
+    const newDiscount = DISCOUNT_OPTIONS.DEFAULT_DISCOUNT;
+    updateField("discounts", [...productForm.discounts, newDiscount]);
+  }, [productForm.discounts, updateField]);
+
+  /**상품 추가 취소 */
+  const handleCancel = useCallback(() => {
+    setEditingProduct(null);
+    setProductForm(INITIAL_PRODUCT_FORM);
+    setShowProductForm(false);
+  }, [setEditingProduct, setProductForm, setShowProductForm]);
+
+  return (
+    <div className="p-6 border-t border-gray-200 bg-gray-50">
+      <form onSubmit={handleProductSubmit} className="space-y-4">
+        <h3 className="text-lg font-medium text-gray-900">{editingProduct === "new" ? "새 상품 추가" : "상품 수정"}</h3>
+
+        {/* 기본 정보 입력 필드들 */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* 상품명 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              상품명 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={productForm.name}
+              onChange={handleNameChange}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
+              required
+              maxLength={100}
+            />
+          </div>
+
+          {/* 설명 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">설명</label>
+            <input
+              type="text"
+              value={productForm.description}
+              onChange={handleDescriptionChange}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
+              maxLength={200}
+            />
+          </div>
+
+          {/* 가격 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              가격 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={productForm.price === 0 ? "" : productForm.price}
+              onChange={handlePriceChange}
+              onBlur={handlePriceBlur}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
+              placeholder="숫자만 입력"
+              required
+            />
+          </div>
+
+          {/* 재고 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              재고 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={productForm.stock === 0 ? "" : productForm.stock}
+              onChange={handleStockChange}
+              onBlur={handleStockBlur}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
+              placeholder="숫자만 입력"
+              required
+            />
+          </div>
+        </div>
+
+        {/* 할인 정책 섹션 */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">할인 정책</label>
+          <div className="space-y-2">
+            {/* 기존 할인 정책들 */}
+            {productForm.discounts.map((discount, index) => (
+              <div key={index} className="flex items-center gap-2 bg-gray-50 p-2 rounded">
+                <input
+                  type="number"
+                  value={discount.quantity}
+                  onChange={(e) => handleDiscountQuantityChange(index, e.target.value)}
+                  className="w-20 px-2 py-1 border rounded"
+                  min="1"
+                  placeholder="수량"
+                />
+                <span className="text-sm">개 이상 구매 시</span>
+                <input
+                  type="number"
+                  value={discount.rate * 100}
+                  onChange={(e) => handleDiscountRateChange(index, e.target.value)}
+                  className="w-16 px-2 py-1 border rounded"
+                  min="0"
+                  max="100"
+                  placeholder="%"
+                />
+                <span className="text-sm">% 할인</span>
+                <button type="button" onClick={() => handleRemoveDiscount(index)} className="text-red-600 hover:text-red-800">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+            {/* 할인 추가 버튼 */}
+            <button type="button" onClick={handleAddDiscount} className="text-sm text-indigo-600 hover:text-indigo-800">
+              + 할인 추가
+            </button>
+          </div>
+        </div>
+
+        {/* 액션 버튼들 */}
+        <div className="flex justify-end gap-3">
+          <button type="button" onClick={handleCancel} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+            취소
+          </button>
+          <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700">
+            {editingProduct === "new" ? "추가" : "수정"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default ProductForm;
