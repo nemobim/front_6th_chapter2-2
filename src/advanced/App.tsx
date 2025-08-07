@@ -56,7 +56,6 @@ const AppContent = () => {
         ) : (
           <CustomerPage
             products={products}
-            cart={cart}
             setCart={setCart}
             addToCart={addToCart}
             removeFromCart={removeFromCart}

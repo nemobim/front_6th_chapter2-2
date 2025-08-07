@@ -7,12 +7,12 @@ import { useProductSearch } from "../hooks/useProductSearch";
 import { ProductWithUI } from "../types/product";
 import { generateOrderNumber } from "../utils/orderUtils";
 import { useAtom } from "jotai";
-import { couponsAtom, selectedCouponAtom } from "../atoms/couponAtoms";
+import { cartAtom } from "../atoms/cartAtoms";
+import { selectedCouponAtom } from "../atoms/couponAtoms";
 import { useSearch } from "../hooks/useSearch";
 
 interface CustomerPageProps {
   products: ProductWithUI[];
-  cart: CartItem[];
   setCart: Dispatch<SetStateAction<CartItem[]>>;
   addToCart: (product: ProductWithUI) => void;
   removeFromCart: (productId: string) => void;
@@ -23,10 +23,7 @@ interface CustomerPageProps {
   totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
 }
 
-export const CustomerPage = ({ products, cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, applyCoupon, totals }: CustomerPageProps) => {
-  /** 쿠폰 목록 - Jotai 사용 */
-  const [coupons] = useAtom(couponsAtom);
-
+export const CustomerPage = ({ products, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, applyCoupon, totals }: CustomerPageProps) => {
   /** 검색어 설정 - Jotai 사용 */
   const { debouncedSearchTerm } = useSearch();
 
@@ -57,15 +54,11 @@ export const CustomerPage = ({ products, cart, setCart, addToCart, removeFromCar
       </div>
       <div className="lg:col-span-1">
         <CartSidebar
-          cart={cart}
-          coupons={coupons}
-          selectedCoupon={selectedCoupon}
           totals={totals}
           calculateItemTotal={calculateItemTotal}
           removeFromCart={removeFromCart}
           updateCartQuantity={updateCartQuantity}
           applyCoupon={applyCoupon}
-          setSelectedCoupon={setSelectedCoupon}
           completeOrder={completeOrder}
         />
       </div>

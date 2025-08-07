@@ -1,3 +1,6 @@
+import { useAtom } from "jotai";
+import { cartAtom } from "../../../atoms/cartAtoms";
+import { couponsAtom, selectedCouponAtom } from "../../../atoms/couponAtoms";
 import { CartItem, Coupon } from "../../../../types";
 import CartItemBox from "./CartItemBox";
 import { CouponSection } from "../CouponSection";
@@ -5,19 +8,24 @@ import { PaymentSection } from "../PaymentSection";
 import { BagIcon, EmptyCartIcon } from "../../elements/Icons";
 
 interface CartSidebarProps {
-  cart: CartItem[];
-  coupons: Coupon[];
-  selectedCoupon: Coupon | null;
   totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
   calculateItemTotal: (item: CartItem) => number;
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
   applyCoupon: (coupon: Coupon) => void;
-  setSelectedCoupon: (coupon: Coupon | null) => void;
   completeOrder: () => void;
 }
 
-export const CartSidebar = ({ cart, coupons, selectedCoupon, totals, calculateItemTotal, removeFromCart, updateCartQuantity, applyCoupon, setSelectedCoupon, completeOrder }: CartSidebarProps) => {
+export const CartSidebar = ({ totals, calculateItemTotal, removeFromCart, updateCartQuantity, applyCoupon, completeOrder }: CartSidebarProps) => {
+  /** 장바구니 상태 - Jotai 사용 */
+  const [cart] = useAtom(cartAtom);
+
+  /** 쿠폰 목록 - Jotai 사용 */
+  const [coupons] = useAtom(couponsAtom);
+
+  /** 선택된 쿠폰 - Jotai 사용 */
+  const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
+
   return (
     <div className="sticky top-24 space-y-4">
       <section className="bg-white rounded-lg border border-gray-200 p-4">
