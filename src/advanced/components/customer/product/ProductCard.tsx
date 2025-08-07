@@ -23,6 +23,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   /** 재고 확인 */
   const remainingStock = getRemainingStock(product);
 
+  /** 가격 포맷팅 */
+  const formattedPrice = formatPrice(product.price, isAdmin, {
+    productId: product.id,
+    products,
+    getRemainingStock,
+  });
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
       {/* 상품 이미지 영역 */}
@@ -41,13 +48,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* 가격 정보 */}
         <div className="mb-3">
-          <p className="text-lg font-bold text-gray-900">
-            {formatPrice(product.price, isAdmin, {
-              productId: product.id,
-              products: [product],
-              getRemainingStock,
-            })}
-          </p>
+          <p className="text-lg font-bold text-gray-900">{formattedPrice}</p>
           {product.discounts.length > 0 && (
             <p className="text-xs text-gray-500">
               {product.discounts[0].quantity}개 이상 구매시 할인 {product.discounts[0].rate * 100}%

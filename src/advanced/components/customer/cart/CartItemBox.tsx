@@ -1,6 +1,9 @@
+import { useAtom } from "jotai";
 import { useCart } from "../../../hooks/useCart";
 import { useProduct } from "../../../hooks/useProduct";
+import { cartAtom } from "../../../atoms/cartAtoms";
 import { CartItem } from "../../../../types";
+import { calculateItemTotal } from "../../../utils/cartCalculations";
 import { CloseIcon } from "../../elements/Icons";
 
 interface CartItemProps {
@@ -8,14 +11,17 @@ interface CartItemProps {
 }
 
 const CartItemBox = ({ item }: CartItemProps) => {
+  /** 장바구니 상태 - Jotai 사용 */
+  const [cart] = useAtom(cartAtom);
+
   /** 상품 데이터 - useProduct hook 사용 */
   const { products } = useProduct();
 
   /** 장바구니 관련 actions - useCart hook 사용 */
-  const { calculateItemTotal, removeFromCart, updateCartQuantity } = useCart({ products });
+  const { removeFromCart, updateCartQuantity } = useCart({ products });
 
-  /** 총 가격 계산 */
-  const itemTotal = calculateItemTotal(item);
+  /** 총 가격 계산*/
+  const itemTotal = calculateItemTotal(item, cart);
   /** 원래 가격 */
   const originalPrice = item.product.price * item.quantity;
   /** 할인 여부 */
