@@ -1,7 +1,6 @@
 import { Provider } from "jotai";
 import Header from "./components/layout/Header";
 import { useCart } from "./hooks/useCart";
-import { useCartTotals } from "./hooks/useCartTotals";
 import { useCoupon } from "./hooks/useCoupon";
 import { NotificationProvider } from "./hooks/useNotification";
 import { useProduct } from "./hooks/useProduct";
@@ -10,6 +9,7 @@ import AdminPage from "./pages/AdminPage";
 import { CustomerPage } from "./pages/CustomerPage";
 import { useAtom } from "jotai";
 import { isAdminAtom } from "./atoms/adminAtoms";
+import { cartTotalsAtom } from "./atoms/cartAtoms";
 
 // 메인 앱 컴포넌트 (NotificationProvider 내부에서 실행)
 const AppContent = () => {
@@ -25,8 +25,8 @@ const AppContent = () => {
   /** 장바구니 hook 사용 */
   const { cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal } = useCart({ products });
 
-  /** 장바구니 총액 계산 (할인 포함) */
-  const cartTotals = useCartTotals({ cart, calculateItemTotal });
+  /** 장바구니 총액 - Jotai 사용 */
+  const [cartTotals] = useAtom(cartTotalsAtom);
 
   /** 쿠폰 hook 사용 */
   const { applyCoupon, addCoupon, deleteCoupon } = useCoupon({ cartTotals });
@@ -62,7 +62,6 @@ const AppContent = () => {
             updateCartQuantity={updateCartQuantity}
             getRemainingStock={getRemainingStock}
             calculateItemTotal={calculateItemTotal}
-            totals={cartTotals}
             applyCoupon={applyCoupon}
           />
         )}

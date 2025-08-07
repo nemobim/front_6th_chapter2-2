@@ -20,10 +20,9 @@ interface CustomerPageProps {
   getRemainingStock: (product: ProductWithUI) => number;
   calculateItemTotal: (item: CartItem) => number;
   applyCoupon: (coupon: any) => void;
-  totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
 }
 
-export const CustomerPage = ({ products, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, applyCoupon, totals }: CustomerPageProps) => {
+export const CustomerPage = ({ products, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, applyCoupon }: CustomerPageProps) => {
   /** 검색어 설정 - Jotai 사용 */
   const { debouncedSearchTerm } = useSearch();
 
@@ -53,14 +52,7 @@ export const CustomerPage = ({ products, setCart, addToCart, removeFromCart, upd
         <ProductGrid products={products} filteredProducts={filteredProducts} debouncedSearchTerm={debouncedSearchTerm} getRemainingStock={getRemainingStock} addToCart={addToCart} />
       </div>
       <div className="lg:col-span-1">
-        <CartSidebar
-          totals={totals}
-          calculateItemTotal={calculateItemTotal}
-          removeFromCart={removeFromCart}
-          updateCartQuantity={updateCartQuantity}
-          applyCoupon={applyCoupon}
-          completeOrder={completeOrder}
-        />
+        <CartSidebar calculateItemTotal={calculateItemTotal} removeFromCart={removeFromCart} updateCartQuantity={updateCartQuantity} applyCoupon={applyCoupon} completeOrder={completeOrder} />
       </div>
     </div>
   );
