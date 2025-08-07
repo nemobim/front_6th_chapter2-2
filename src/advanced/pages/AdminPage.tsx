@@ -5,6 +5,8 @@ import CouponManager from "../components/admin/coupon/CouponManager";
 import { TActiveTab } from "../constants/adminConstants";
 import { NewProductForm, ProductWithUI } from "../types/product";
 import ProductManager from "../components/admin/product/ProductManager";
+import { useAtom } from "jotai";
+import { couponsAtom } from "../atoms/couponAtoms";
 
 interface AdminDashboardProps {
   // 상품 관련
@@ -23,7 +25,6 @@ interface AdminDashboardProps {
   getRemainingStock: (product: ProductWithUI) => number;
 
   // 쿠폰 관련
-  coupons: Coupon[];
   deleteCoupon: (couponId: string) => void;
   addCoupon: (coupon: Omit<Coupon, "id">) => void;
 }
@@ -42,10 +43,12 @@ const AdminPage = ({
   editProductForm,
   deleteProduct,
   getRemainingStock,
-  coupons,
   deleteCoupon,
   addCoupon,
 }: AdminDashboardProps) => {
+  /** 쿠폰 목록 - Jotai 사용 */
+  const [coupons] = useAtom(couponsAtom);
+
   /** 탭 상태 */
   const [activeTab, setActiveTab] = useState<TActiveTab>("products");
 

@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useAtom } from "jotai";
+import { useCallback, useEffect } from "react";
 import { Coupon } from "../../types";
-import { initialCoupons } from "../constants/data";
-import { useNotification } from "./useNotification";
-import { loadDataFromStorage, saveDataToStorage } from "../utils/localStorageUtils";
+import { couponsAtom } from "../atoms/couponAtoms";
 import { validateCouponApplication, validateCouponCode } from "../utils/couponUtils";
+import { saveDataToStorage } from "../utils/localStorageUtils";
+import { useNotification } from "./useNotification";
 
 interface UseCouponProps {
   cartTotals: { totalBeforeDiscount: number; totalAfterDiscount: number };
@@ -15,8 +16,8 @@ export const useCoupon = ({ cartTotals, selectedCoupon, setSelectedCoupon }: Use
   /** 알림 표시 */
   const { showToast } = useNotification();
 
-  /** 쿠폰 목록 */
-  const [coupons, setCoupons] = useState<Coupon[]>(loadDataFromStorage<Coupon[]>("coupons", initialCoupons));
+  /** 쿠폰 목록 - Jotai 사용 */
+  const [coupons, setCoupons] = useAtom(couponsAtom);
 
   /** 쿠폰 적용 */
   const applyCoupon = useCallback(
@@ -40,7 +41,7 @@ export const useCoupon = ({ cartTotals, selectedCoupon, setSelectedCoupon }: Use
       setCoupons((prev) => [...prev, newCoupon]);
       showToast("쿠폰이 추가되었습니다.", "success");
     },
-    [coupons, showToast]
+    [coupons, showToast, setCoupons]
   );
 
   /** 쿠폰 삭제 */
@@ -55,7 +56,7 @@ export const useCoupon = ({ cartTotals, selectedCoupon, setSelectedCoupon }: Use
 
       showToast("쿠폰이 삭제되었습니다.", "success");
     },
-    [selectedCoupon, showToast, setSelectedCoupon]
+    [selectedCoupon, showToast, setSelectedCoupon, setCoupons]
   );
 
   /** localStorage 동기화 */

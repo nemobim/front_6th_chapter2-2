@@ -1,5 +1,15 @@
 import { atom } from "jotai";
 import { Coupon } from "../../types";
+import { initialCoupons } from "../constants/data";
 
-export const couponsAtom = atom<Coupon[]>([]);
+/** 쿠폰 목록 */
+export const couponsAtom = atom<Coupon[]>(initialCoupons);
+
+/** 선택된 쿠폰 */
 export const selectedCouponAtom = atom<Coupon | null>(null);
+
+/** 쿠폰 개수 */
+export const couponsCountAtom = atom((get) => get(couponsAtom).length);
+
+/** 쿠폰 존재 여부 */
+export const hasCouponsAtom = atom((get) => get(couponsAtom).length > 0);

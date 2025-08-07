@@ -6,6 +6,8 @@ import { useNotification } from "../hooks/useNotification";
 import { useProductSearch } from "../hooks/useProductSearch";
 import { ProductWithUI } from "../types/product";
 import { generateOrderNumber } from "../utils/orderUtils";
+import { useAtom } from "jotai";
+import { couponsAtom } from "../atoms/couponAtoms";
 
 interface CustomerPageProps {
   isAdmin: boolean;
@@ -18,10 +20,9 @@ interface CustomerPageProps {
   updateCartQuantity: (productId: string, quantity: number) => void;
   getRemainingStock: (product: ProductWithUI) => number;
   calculateItemTotal: (item: CartItem) => number;
-  coupons: Coupon[];
   selectedCoupon: Coupon | null;
-  applyCoupon: (coupon: Coupon) => void;
   setSelectedCoupon: (coupon: Coupon | null) => void;
+  applyCoupon: (coupon: Coupon) => void;
   totals: { totalBeforeDiscount: number; totalAfterDiscount: number };
 }
 
@@ -36,12 +37,14 @@ export const CustomerPage = ({
   updateCartQuantity,
   getRemainingStock,
   calculateItemTotal,
-  coupons,
   selectedCoupon,
-  applyCoupon,
   setSelectedCoupon,
+  applyCoupon,
   totals,
 }: CustomerPageProps) => {
+  /** 쿠폰 목록 - Jotai 사용 */
+  const [coupons] = useAtom(couponsAtom);
+
   /** 알림 표시 */
   const { showToast } = useNotification();
 

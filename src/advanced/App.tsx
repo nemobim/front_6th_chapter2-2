@@ -35,7 +35,7 @@ const AppContent = () => {
   const cartTotals = useCartTotals({ cart, selectedCoupon, calculateItemTotal });
 
   /** 쿠폰 hook 사용 */
-  const { coupons, applyCoupon, addCoupon, deleteCoupon } = useCoupon({ cartTotals, selectedCoupon, setSelectedCoupon });
+  const { applyCoupon, addCoupon, deleteCoupon } = useCoupon({ cartTotals, selectedCoupon, setSelectedCoupon });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,7 +56,6 @@ const AppContent = () => {
             editProductForm={editProductForm}
             deleteProduct={deleteProduct}
             getRemainingStock={getRemainingStock}
-            coupons={coupons}
             deleteCoupon={deleteCoupon}
             addCoupon={addCoupon}
           />
@@ -73,7 +72,6 @@ const AppContent = () => {
             getRemainingStock={getRemainingStock}
             calculateItemTotal={calculateItemTotal}
             totals={cartTotals}
-            coupons={coupons}
             selectedCoupon={selectedCoupon}
             setSelectedCoupon={setSelectedCoupon}
             applyCoupon={applyCoupon}
