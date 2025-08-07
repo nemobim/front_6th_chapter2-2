@@ -1,40 +1,20 @@
-import { Dispatch, SetStateAction } from "react";
-import { NewProductForm, ProductWithUI } from "../../../types/product";
+import { useProduct } from "../../../hooks/useProduct";
+import { useProductForm } from "../../../hooks/useProductForm";
+import { useCart } from "../../../hooks/useCart";
 import ProductForm from "./ProductForm";
 import ProductHeader from "./ProductHeader";
 import ProductTable from "./ProductTable";
 
-interface IProductManagementTableProps {
-  products: ProductWithUI[];
-  setEditingProduct: Dispatch<SetStateAction<string | null>>;
-  setProductForm: Dispatch<SetStateAction<NewProductForm>>;
-  setShowProductForm: Dispatch<SetStateAction<boolean>>;
-  editProductForm: (product: ProductWithUI) => void;
-  deleteProduct: (productId: string) => void;
-  addProduct: (product: NewProductForm) => void;
-  updateProduct: (productId: string, product: NewProductForm) => void;
-  clearProductForm: () => void;
-  productForm: NewProductForm;
-  editingProduct: string | null;
-  showProductForm: boolean;
-  getRemainingStock: (product: ProductWithUI) => number;
-}
+const ProductManager = () => {
+  /** 상품 관련 - useProduct hook 사용 */
+  const { products, addProduct, updateProduct, deleteProduct } = useProduct();
 
-const ProductManager = ({
-  products,
-  setEditingProduct,
-  setProductForm,
-  setShowProductForm,
-  editProductForm,
-  deleteProduct,
-  addProduct,
-  updateProduct,
-  clearProductForm,
-  productForm,
-  editingProduct,
-  showProductForm,
-  getRemainingStock,
-}: IProductManagementTableProps) => {
+  /** 상품 폼 관련 - useProductForm hook 사용 */
+  const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
+
+  /** 장바구니 관련 - useCart hook 사용 */
+  const { getRemainingStock } = useCart({ products });
+
   /** 상품 등록 */
   const handleProductSubmit = (e: React.FormEvent) => {
     // 이벤트 전파 방지
