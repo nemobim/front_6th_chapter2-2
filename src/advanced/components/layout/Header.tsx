@@ -1,15 +1,11 @@
 import { useAtom } from "jotai";
 import { searchTermAtom } from "../../atoms/searchAtoms";
 import { isAdminAtom } from "../../atoms/adminAtoms";
+import { totalItemCountAtom } from "../../atoms/cartAtoms";
 import { CartIcon } from "../elements/Icons";
-import { SetStateAction } from "jotai";
-import { Dispatch } from "react";
+import { Dispatch, SetStateAction } from "react";
 
-export interface IHeaderProps {
-  totalItemCount: number;
-}
-
-const Header = ({ totalItemCount }: IHeaderProps) => {
+const Header = () => {
   const [isAdmin, setIsAdmin] = useAtom(isAdminAtom);
 
   return (
@@ -23,7 +19,7 @@ const Header = ({ totalItemCount }: IHeaderProps) => {
           </div>
           <nav className="flex items-center space-x-4">
             <AdminToggle isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
-            {!isAdmin && <CartCount totalItemCount={totalItemCount} />}
+            {!isAdmin && <CartCount />}
           </nav>
         </div>
       </div>
@@ -60,9 +56,13 @@ export const AdminToggle = ({ isAdmin, setIsAdmin }: { isAdmin: boolean; setIsAd
 };
 
 /** 장바구니 수량 */
-export const CartCount = ({ totalItemCount }: { totalItemCount: number }) => (
-  <div className="relative">
-    <CartIcon />
-    {totalItemCount > 0 && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{totalItemCount}</span>}
-  </div>
-);
+export const CartCount = () => {
+  const [totalItemCount] = useAtom(totalItemCountAtom);
+
+  return (
+    <div className="relative">
+      <CartIcon />
+      {totalItemCount > 0 && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{totalItemCount}</span>}
+    </div>
+  );
+};

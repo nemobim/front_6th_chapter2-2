@@ -23,7 +23,7 @@ const AppContent = () => {
   const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
 
   /** 장바구니 hook 사용 */
-  const { cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal, totalItemCount } = useCart({ products });
+  const { cart, setCart, addToCart, removeFromCart, updateCartQuantity, getRemainingStock, calculateItemTotal } = useCart({ products });
 
   /** 장바구니 총액 계산 (할인 포함) */
   const cartTotals = useCartTotals({ cart, calculateItemTotal });
@@ -33,7 +33,7 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header totalItemCount={totalItemCount} />
+      <Header />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage

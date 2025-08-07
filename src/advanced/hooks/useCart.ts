@@ -1,8 +1,10 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
+import { useAtom } from "jotai";
+import { cartAtom } from "../atoms/cartAtoms";
 import { CartItem } from "../../types";
 import { ProductWithUI } from "../types/product";
 import { useNotification } from "./useNotification";
-import { calculateRemainingStock, calculateItemTotal, calculateTotalItemCount } from "../utils/cartCalculations";
+import { calculateRemainingStock, calculateItemTotal } from "../utils/cartCalculations";
 import { loadDataFromStorage, removeDataFromStorage, saveDataToStorage } from "../utils/localStorageUtils";
 import { addItemToCart, removeItemFromCart, updateItemQuantity, validateStockAvailability, validateQuantity } from "../utils/cartUtils";
 
@@ -14,11 +16,16 @@ export const useCart = ({ products }: UseCartProps) => {
   /** 알림 표시 */
   const { showToast } = useNotification();
 
-  /** 장바구니 상태 */
-  const [cart, setCart] = useState<CartItem[]>(loadDataFromStorage<CartItem[]>("cart", []));
+  /** 장바구니 상태 - Jotai 사용 */
+  const [cart, setCart] = useAtom(cartAtom);
 
-  /** 장바구니 총 아이템 수 */
-  const [totalItemCount, setTotalItemCount] = useState(0);
+  /** 초기 데이터 로드 */
+  useEffect(() => {
+    const savedCart = loadDataFromStorage<CartItem[]>("cart", []);
+    if (savedCart.length > 0) {
+      setCart(savedCart);
+    }
+  }, [setCart]);
 
   /** 재고 계산 */
   const getRemainingStock = useMemo(
@@ -58,13 +65,16 @@ export const useCart = ({ products }: UseCartProps) => {
 
       showToast("장바구니에 담았습니다", "success");
     },
-    [cart, showToast]
+    [cart, showToast, setCart]
   );
 
   /** 장바구니 삭제 */
-  const removeFromCart = useCallback((productId: string) => {
-    setCart((prevCart) => removeItemFromCart(prevCart, productId));
-  }, []);
+  const removeFromCart = useCallback(
+    (productId: string) => {
+      setCart((prevCart) => removeItemFromCart(prevCart, productId));
+    },
+    [setCart]
+  );
 
   /** 장바구니 수량 변경 */
   const updateCartQuantity = useCallback(
@@ -81,14 +91,8 @@ export const useCart = ({ products }: UseCartProps) => {
 
       setCart((prevCart) => updateItemQuantity(prevCart, productId, newQuantity, product.stock));
     },
-    [products, showToast]
+    [products, showToast, setCart]
   );
-
-  // 장바구니 아이템 카운트 계산
-  useEffect(() => {
-    const count = calculateTotalItemCount(cart);
-    setTotalItemCount(count);
-  }, [cart]);
 
   // localStorage 동기화
   useEffect(() => {
@@ -102,7 +106,6 @@ export const useCart = ({ products }: UseCartProps) => {
   return {
     cart,
     setCart,
-    totalItemCount,
     addToCart,
     removeFromCart,
     updateCartQuantity,
