@@ -5,8 +5,8 @@ import CouponManager from "../components/admin/coupon/CouponManager";
 import ProductManager from "../components/admin/product/ProductManager";
 
 const AdminPage = () => {
-  /** 활성 탭 상태 - Jotai 사용 */
-  const [activeTab] = useAtom(activeTabAtom);
+  /** 활성 탭 상태 */
+  const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -17,7 +17,7 @@ const AdminPage = () => {
       </div>
 
       {/* 탭 네비게이션 */}
-      <AdminNavigation />
+      <AdminNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* 탭 컨텐츠 */}
       {activeTab === "products" ? <ProductManager /> : <CouponManager />}

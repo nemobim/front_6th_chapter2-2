@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import { isAdminAtom } from "./atoms/adminAtoms";
 
 const AppContent = () => {
-  /** 관리자 상태 여부 - Jotai 사용 */
+  /** 관리자 상태 여부 */
   const [isAdmin] = useAtom(isAdminAtom);
 
   return (
