@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Coupon } from "../../types";
 import AdminNavigation from "../components/admin/AdminNavigation";
-import CouponManager from "../components/admin/CouponManager";
-import ProductManager from "../components/admin/ProductManager";
+import CouponManager from "../components/coupon/CouponManager";
+import ProductManager from "../components/procuct/ProductManager";
 import { TActiveTab } from "../constants/adminConstants";
 import { NewProductForm, ProductWithUI } from "../types/product";
 
