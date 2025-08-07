@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useAtom } from "jotai";
+import { showCouponFormAtom, couponFormAtom } from "../atoms/couponAtoms";
 
 export const INITIAL_COUPON_FORM = {
   name: "",
@@ -9,10 +10,10 @@ export const INITIAL_COUPON_FORM = {
 
 export const useCouponForm = () => {
   /** 쿠폰 등록 폼 표시 상태 */
-  const [showCouponForm, setShowCouponForm] = useState(false);
+  const [showCouponForm, setShowCouponForm] = useAtom(showCouponFormAtom);
 
   /** 쿠폰 등록 폼 데이터 */
-  const [couponForm, setCouponForm] = useState(INITIAL_COUPON_FORM);
+  const [couponForm, setCouponForm] = useAtom(couponFormAtom);
 
   /** 쿠폰 등록 폼 초기화 */
   const clearCouponForm = () => {

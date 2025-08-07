@@ -18,7 +18,7 @@ const CouponManager = () => {
   const { addCoupon, deleteCoupon } = useCoupon({ cartTotals });
 
   /** 쿠폰 등록 폼 hook 사용 */
-  const { showCouponForm, setShowCouponForm, couponForm, setCouponForm, clearCouponForm } = useCouponForm();
+  const { showCouponForm, setShowCouponForm } = useCouponForm();
 
   return (
     <section className="bg-white rounded-lg border border-gray-200">
@@ -42,7 +42,7 @@ const CouponManager = () => {
         </div>
 
         {/* 쿠폰 등록 form */}
-        {showCouponForm && <CouponForm addCoupon={addCoupon} clearCouponForm={clearCouponForm} setShowCouponForm={setShowCouponForm} couponForm={couponForm} setCouponForm={setCouponForm} />}
+        {showCouponForm && <CouponForm addCoupon={addCoupon} />}
       </div>
     </section>
   );

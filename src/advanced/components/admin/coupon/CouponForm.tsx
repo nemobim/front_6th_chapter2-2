@@ -1,17 +1,17 @@
-import { Dispatch, SetStateAction, useMemo } from "react";
+import { useMemo } from "react";
 import { Coupon } from "../../../../types";
+import { useCouponForm } from "../../../hooks/useCouponForm";
 import { useCouponFormHandlers } from "../../../hooks/useCouponFormHandlers";
 import { couponHandlers, DISCOUNT_TYPE_OPTIONS, MAX_COUPON_CODE_LENGTH, MAX_COUPON_NAME_LENGTH } from "../../../utils/couponUtils";
 
 interface ICouponFormProps {
   addCoupon: (coupon: Coupon) => void;
-  clearCouponForm: () => void;
-  setShowCouponForm: Dispatch<SetStateAction<boolean>>;
-  couponForm: Coupon;
-  setCouponForm: Dispatch<SetStateAction<Coupon>>;
 }
 
-const CouponForm = ({ addCoupon, clearCouponForm, setShowCouponForm, couponForm, setCouponForm }: ICouponFormProps) => {
+const CouponForm = ({ addCoupon }: ICouponFormProps) => {
+  /** 쿠폰 등록 폼 hook 사용 */
+  const { setShowCouponForm, couponForm, setCouponForm, clearCouponForm } = useCouponForm();
+
   /** 할인 타입에 따른 레이블과 플레이스홀더 설정 */
   const discountConfig = useMemo(() => couponHandlers.getDiscountConfig(couponForm.discountType), [couponForm.discountType]);
 
