@@ -1,19 +1,17 @@
-import { useSetAtom } from "jotai";
-import { NewProductForm } from "../../../types/product";
+import { useAtom } from "jotai";
 import { useProductFormHandlers } from "../../../hooks/useProductFormHandlers";
 import { MAX_DESCRIPTION_LENGTH, MAX_PRODUCT_NAME_LENGTH } from "../../../utils/productUtils";
 import { productFormAtom, editingProductAtom, showProductFormAtom } from "../../../atoms/productAtoms";
 
 interface IProductFormProps {
-  productForm: NewProductForm;
-  editingProduct: string | null;
   handleProductSubmit: (e: React.FormEvent) => void;
 }
 
-const ProductForm = ({ productForm, editingProduct, handleProductSubmit }: IProductFormProps) => {
-  const setProductForm = useSetAtom(productFormAtom);
-  const setEditingProduct = useSetAtom(editingProductAtom);
-  const setShowProductForm = useSetAtom(showProductFormAtom);
+const ProductForm = ({ handleProductSubmit }: IProductFormProps) => {
+  /** Jotai atoms 직접 사용 */
+  const [productForm, setProductForm] = useAtom(productFormAtom);
+  const [editingProduct, setEditingProduct] = useAtom(editingProductAtom);
+  const [, setShowProductForm] = useAtom(showProductFormAtom);
 
   /** 상품 폼 핸들러 사용 */
   const {

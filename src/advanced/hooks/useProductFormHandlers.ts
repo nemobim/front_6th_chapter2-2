@@ -1,7 +1,8 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { NewProductForm } from "../types/product";
 import { useNotification } from "./useNotification";
-import { DISCOUNT_OPTIONS, INITIAL_PRODUCT_FORM, processNumericInput, productValidation } from "../utils/productUtils";
+import { DISCOUNT_OPTIONS, processNumericInput, productValidation } from "../utils/productUtils";
+import { useProductForm } from "./useProductForm";
 
 interface IUseProductFormHandlersProps {
   setProductForm: Dispatch<SetStateAction<NewProductForm>>;
@@ -9,8 +10,10 @@ interface IUseProductFormHandlersProps {
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
 }
 
-export const useProductFormHandlers = ({ setProductForm, setEditingProduct, setShowProductForm }: IUseProductFormHandlersProps) => {
+export const useProductFormHandlers = ({ setProductForm }: IUseProductFormHandlersProps) => {
   const { showToast } = useNotification();
+  const { clearProductForm } = useProductForm();
+
   /** 상품 폼 업데이트 */
   const updateField = useCallback(
     <K extends keyof NewProductForm>(field: K, value: NewProductForm[K]) => {
@@ -126,12 +129,10 @@ export const useProductFormHandlers = ({ setProductForm, setEditingProduct, setS
     }));
   }, [setProductForm]);
 
-  /**상품 추가 취소 */
+  /** 상품 추가 취소 - clearProductForm 사용 */
   const handleCancel = useCallback(() => {
-    setEditingProduct(null);
-    setProductForm(INITIAL_PRODUCT_FORM);
-    setShowProductForm(false);
-  }, [setEditingProduct, setProductForm, setShowProductForm]);
+    clearProductForm();
+  }, [clearProductForm]);
 
   return {
     handleNameChange,

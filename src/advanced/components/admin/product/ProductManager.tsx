@@ -35,14 +35,14 @@ const ProductManager = () => {
 
   return (
     <section className="bg-white rounded-lg border border-gray-200">
-      {/* 헤더 섹션 - props 제거 */}
+      {/* 헤더 섹션 */}
       <ProductHeader />
 
-      {/* 상품 테이블 - props 제거 */}
+      {/* 상품 테이블 */}
       <ProductTable products={products} getRemainingStock={getRemainingStock} editProductForm={editProductForm} deleteProduct={deleteProduct} />
 
-      {/* 상품 폼 섹션 - props 제거 */}
-      {showProductForm && <ProductForm productForm={productForm} editingProduct={editingProduct} handleProductSubmit={handleProductSubmit} />}
+      {/* 상품 폼 섹션 */}
+      {showProductForm && <ProductForm handleProductSubmit={handleProductSubmit} />}
     </section>
   );
 };
