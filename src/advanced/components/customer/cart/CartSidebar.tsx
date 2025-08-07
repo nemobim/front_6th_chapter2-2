@@ -1,18 +1,18 @@
 import { useAtom } from "jotai";
+import { useCallback } from "react";
+import { Coupon } from "../../../../types";
 import { cartAtom } from "../../../atoms/cartAtoms";
 import { couponsAtom, selectedCouponAtom } from "../../../atoms/couponAtoms";
-import { CartItem, Coupon } from "../../../../types";
-import { useNotification } from "../../../hooks/useNotification";
-import { useCartTotals } from "../../../hooks/useCartTotals";
 import { useCart } from "../../../hooks/useCart";
+import { useCartTotals } from "../../../hooks/useCartTotals";
+import { useNotification } from "../../../hooks/useNotification";
 import { useProduct } from "../../../hooks/useProduct";
 import { validateCouponApplication } from "../../../utils/couponUtils";
 import { generateOrderNumber } from "../../../utils/orderUtils";
-import { useCallback } from "react";
-import CartItemBox from "./CartItemBox";
+import { BagIcon, EmptyCartIcon } from "../../elements/Icons";
 import { CouponSection } from "../CouponSection";
 import { PaymentSection } from "../PaymentSection";
-import { BagIcon, EmptyCartIcon } from "../../elements/Icons";
+import CartItemBox from "./CartItemBox";
 
 interface CartSidebarProps {}
 

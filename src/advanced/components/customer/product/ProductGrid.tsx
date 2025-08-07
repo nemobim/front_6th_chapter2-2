@@ -1,5 +1,3 @@
-import { useAtom } from "jotai";
-import { isAdminAtom } from "../../../atoms/adminAtoms";
 import { ProductWithUI } from "../../../types/product";
 import { ProductCard } from "./ProductCard";
 

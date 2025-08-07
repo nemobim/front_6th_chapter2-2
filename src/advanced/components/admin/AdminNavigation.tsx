@@ -1,12 +1,11 @@
-import { Dispatch, SetStateAction } from "react";
+import { useAtom } from "jotai";
+import { activeTabAtom } from "../../atoms/adminAtoms";
 import { ADMIN_TABS, TActiveTab } from "../../constants/adminConstants";
 
-interface IAdminNavigationProps {
-  activeTab: TActiveTab;
-  setActiveTab: Dispatch<SetStateAction<TActiveTab>>;
-}
+const AdminNavigation = () => {
+  /** 활성 탭 상태 - Jotai 사용 */
+  const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 
-const AdminNavigation = ({ activeTab, setActiveTab }: IAdminNavigationProps) => {
   /** 탭 클릭 시 활성화 탭 변경 */
   const handleActiveTab = (tab: TActiveTab) => {
     setActiveTab(tab);

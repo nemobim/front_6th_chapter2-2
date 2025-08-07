@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useAtom } from "jotai";
+import { activeTabAtom } from "../atoms/adminAtoms";
 import AdminNavigation from "../components/admin/AdminNavigation";
 import CouponManager from "../components/admin/coupon/CouponManager";
 import ProductManager from "../components/admin/product/ProductManager";
-import { TActiveTab } from "../constants/adminConstants";
 
 const AdminPage = () => {
-  /** 탭 상태 */
-  const [activeTab, setActiveTab] = useState<TActiveTab>("products");
+  /** 활성 탭 상태 - Jotai 사용 */
+  const [activeTab] = useAtom(activeTabAtom);
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -17,7 +17,7 @@ const AdminPage = () => {
       </div>
 
       {/* 탭 네비게이션 */}
-      <AdminNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      <AdminNavigation />
 
       {/* 탭 컨텐츠 */}
       {activeTab === "products" ? <ProductManager /> : <CouponManager />}
