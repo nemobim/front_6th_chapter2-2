@@ -15,10 +15,10 @@ const AppContent = () => {
   /** 관리자 상태 여부 - Jotai 사용 */
   const [isAdmin] = useAtom(isAdminAtom);
 
-  /** 상품 hook 사용 */
+  /** 상품 hook 사용 (AdminPage에서만 필요) */
   const { products, addProduct, updateProduct, deleteProduct } = useProduct();
 
-  /** 상품 폼 hook 사용 */
+  /** 상품 폼 hook 사용 (AdminPage에서만 필요) */
   const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
 
   /** 장바구니 hook 사용 (AdminPage에서만 필요) */
@@ -27,7 +27,7 @@ const AppContent = () => {
   /** 장바구니 총액 계산 (AdminPage의 쿠폰 관리용) */
   const cartTotals = useCartTotals({ calculateItemTotal: () => 0 }); // 임시
 
-  /** 쿠폰 hook 사용 */
+  /** 쿠폰 hook 사용 (AdminPage에서만 필요) */
   const { addCoupon, deleteCoupon } = useCoupon({ cartTotals });
 
   return (
@@ -53,7 +53,7 @@ const AppContent = () => {
             addCoupon={addCoupon}
           />
         ) : (
-          <CustomerPage products={products} />
+          <CustomerPage />
         )}
       </main>
     </div>

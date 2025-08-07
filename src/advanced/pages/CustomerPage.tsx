@@ -1,14 +1,13 @@
 import { CartSidebar } from "../components/customer/cart/CartSidebar";
 import { ProductGrid } from "../components/customer/product/ProductGrid";
+import { useProduct } from "../hooks/useProduct";
 import { useProductSearch } from "../hooks/useProductSearch";
 import { useSearch } from "../hooks/useSearch";
-import { ProductWithUI } from "../types/product";
 
-interface CustomerPageProps {
-  products: ProductWithUI[];
-}
+export const CustomerPage = () => {
+  /** 상품 데이터 - useProduct hook 사용 */
+  const { products } = useProduct();
 
-export const CustomerPage = ({ products }: CustomerPageProps) => {
   /** 검색어 설정 - Jotai 사용 */
   const { debouncedSearchTerm } = useSearch();
 
