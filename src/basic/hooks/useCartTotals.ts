@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { CartItem, Coupon } from "../../types";
+import { calculateDiscount } from "../utils/cartCalculations";
 
 interface CartTotals {
   totalBeforeDiscount: number;
@@ -14,26 +15,28 @@ interface UseCartTotalsProps {
 
 export const useCartTotals = ({ cart, selectedCoupon, calculateItemTotal }: UseCartTotalsProps): CartTotals => {
   return useMemo(() => {
-    let totalBeforeDiscount = 0;
-    let totalAfterDiscount = 0;
+    // 기본 총액 계산
+    const totals = cart.reduce(
+      (acc, item) => {
+        // 기본 총액 계산
+        const itemPrice = item.product.price * item.quantity;
+        // 할인 적용 총액 계산
+        const itemTotal = calculateItemTotal(item);
 
-    cart.forEach((item) => {
-      const itemPrice = item.product.price * item.quantity;
-      totalBeforeDiscount += itemPrice;
-      totalAfterDiscount += calculateItemTotal(item);
-    });
+        return {
+          totalBeforeDiscount: acc.totalBeforeDiscount + itemPrice,
+          totalAfterDiscount: acc.totalAfterDiscount + itemTotal,
+        };
+      },
+      { totalBeforeDiscount: 0, totalAfterDiscount: 0 }
+    );
 
-    if (selectedCoupon) {
-      if (selectedCoupon.discountType === "amount") {
-        totalAfterDiscount = Math.max(0, totalAfterDiscount - selectedCoupon.discountValue);
-      } else {
-        totalAfterDiscount = Math.round(totalAfterDiscount * (1 - selectedCoupon.discountValue / 100));
-      }
-    }
+    // 쿠폰 할인 적용
+    const finalTotalAfterDiscount = selectedCoupon ? calculateDiscount(totals.totalAfterDiscount, selectedCoupon) : totals.totalAfterDiscount;
 
     return {
-      totalBeforeDiscount: Math.round(totalBeforeDiscount),
-      totalAfterDiscount: Math.round(totalAfterDiscount),
+      totalBeforeDiscount: Math.round(totals.totalBeforeDiscount),
+      totalAfterDiscount: Math.round(finalTotalAfterDiscount),
     };
   }, [cart, selectedCoupon, calculateItemTotal]);
 };

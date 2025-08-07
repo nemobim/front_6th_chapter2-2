@@ -1,4 +1,4 @@
-import { CartItem, Product } from "../../types";
+import { CartItem, Coupon, Product } from "../../types";
 
 /** 장바구니에서 특정 상품의 남은 재고를 계산 */
 export const calculateRemainingStock = (product: Product, cart: CartItem[]): number => {
@@ -48,4 +48,13 @@ export const calculateItemTotal = (item: CartItem, cart: CartItem[]): number => 
 /** 장바구니의 총 아이템 수를 계산 */
 export const calculateTotalItemCount = (cart: CartItem[]): number => {
   return cart.reduce((sum, item) => sum + item.quantity, 0);
+};
+
+/** 쿠폰 할인 계산 */
+export const calculateDiscount = (total: number, coupon: Coupon): number => {
+  if (coupon.discountType === "amount") {
+    return Math.max(0, total - coupon.discountValue);
+  } else {
+    return Math.round(total * (1 - coupon.discountValue / 100));
+  }
 };
