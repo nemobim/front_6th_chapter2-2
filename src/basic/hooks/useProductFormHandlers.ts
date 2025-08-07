@@ -87,11 +87,13 @@ export const useProductFormHandlers = ({ setProductForm, productForm, setEditing
   /** 할인 수량 변경 */
   const handleDiscountQuantityChange = useCallback(
     (index: number, value: string) => {
-      const newDiscounts = [...productForm.discounts];
-      newDiscounts[index].quantity = parseInt(value) || 0;
-      updateField("discounts", newDiscounts);
+      setProductForm((prev) => {
+        const newDiscounts = [...prev.discounts];
+        newDiscounts[index].quantity = parseInt(value) || 0;
+        return { ...prev, discounts: newDiscounts };
+      });
     },
-    [productForm.discounts, updateField]
+    [setProductForm]
   );
 
   /** 할인 비율 변경 */
