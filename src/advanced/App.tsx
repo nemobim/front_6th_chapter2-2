@@ -21,10 +21,10 @@ const AppContent = () => {
   /** 상품 폼 hook 사용 */
   const { editingProduct, setEditingProduct, showProductForm, setShowProductForm, productForm, setProductForm, editProductForm, clearProductForm } = useProductForm();
 
-  /** 장바구니 hook 사용 */
-  const { addToCart, getRemainingStock } = useCart({ products });
+  /** 장바구니 hook 사용 (AdminPage에서만 필요) */
+  const { getRemainingStock } = useCart({ products });
 
-  /** 장바구니 총액 계산 (할인 포함) - Hook 사용 */
+  /** 장바구니 총액 계산 (AdminPage의 쿠폰 관리용) */
   const cartTotals = useCartTotals({ calculateItemTotal: () => 0 }); // 임시
 
   /** 쿠폰 hook 사용 */
@@ -53,7 +53,7 @@ const AppContent = () => {
             addCoupon={addCoupon}
           />
         ) : (
-          <CustomerPage products={products} addToCart={addToCart} getRemainingStock={getRemainingStock} />
+          <CustomerPage products={products} />
         )}
       </main>
     </div>

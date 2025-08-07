@@ -1,18 +1,24 @@
 import { useAtom } from "jotai";
 import { isAdminAtom } from "../../../atoms/adminAtoms";
+import { useProduct } from "../../../hooks/useProduct";
+import { useCart } from "../../../hooks/useCart";
 import { ProductWithUI } from "../../../types/product";
 import { formatPrice } from "../../../utils/productUtils";
 import { ImageIcon } from "../../elements/Icons";
 
 interface ProductCardProps {
   product: ProductWithUI;
-  onAddToCart: (product: ProductWithUI) => void;
-  getRemainingStock: (product: ProductWithUI) => number;
 }
 
-export const ProductCard = ({ product, onAddToCart, getRemainingStock }: ProductCardProps) => {
+export const ProductCard = ({ product }: ProductCardProps) => {
   /** 관리자 모드 여부 - Jotai 사용 */
   const [isAdmin] = useAtom(isAdminAtom);
+
+  /** 상품 데이터 - useProduct hook 사용 */
+  const { products } = useProduct();
+
+  /** 장바구니 관련 actions - useCart hook 사용 */
+  const { addToCart, getRemainingStock } = useCart({ products });
 
   /** 재고 확인 */
   const remainingStock = getRemainingStock(product);
@@ -57,7 +63,7 @@ export const ProductCard = ({ product, onAddToCart, getRemainingStock }: Product
 
         {/* 장바구니 버튼 */}
         <button
-          onClick={() => onAddToCart(product)}
+          onClick={() => addToCart(product)}
           disabled={remainingStock <= 0}
           className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${remainingStock <= 0 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-900 text-white hover:bg-gray-800"}`}
         >

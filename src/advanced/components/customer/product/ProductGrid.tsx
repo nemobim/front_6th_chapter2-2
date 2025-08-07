@@ -7,11 +7,9 @@ interface ProductGridProps {
   products: ProductWithUI[];
   filteredProducts: ProductWithUI[];
   debouncedSearchTerm: string;
-  getRemainingStock: (product: ProductWithUI) => number;
-  addToCart: (product: ProductWithUI) => void;
 }
 
-export const ProductGrid = ({ products, filteredProducts, debouncedSearchTerm, getRemainingStock, addToCart }: ProductGridProps) => {
+export const ProductGrid = ({ products, filteredProducts, debouncedSearchTerm }: ProductGridProps) => {
   return (
     <section>
       <div className="mb-6 flex justify-between items-center">
@@ -26,7 +24,7 @@ export const ProductGrid = ({ products, filteredProducts, debouncedSearchTerm, g
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProducts.map((product) => {
-            return <ProductCard key={product.id} product={product} onAddToCart={addToCart} getRemainingStock={getRemainingStock} />;
+            return <ProductCard key={product.id} product={product} />;
           })}
         </div>
       )}

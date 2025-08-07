@@ -1,4 +1,3 @@
-import { CartItem } from "../../types";
 import { CartSidebar } from "../components/customer/cart/CartSidebar";
 import { ProductGrid } from "../components/customer/product/ProductGrid";
 import { useProductSearch } from "../hooks/useProductSearch";
@@ -7,11 +6,9 @@ import { ProductWithUI } from "../types/product";
 
 interface CustomerPageProps {
   products: ProductWithUI[];
-  addToCart: (product: ProductWithUI) => void;
-  getRemainingStock: (product: ProductWithUI) => number;
 }
 
-export const CustomerPage = ({ products, addToCart, getRemainingStock }: CustomerPageProps) => {
+export const CustomerPage = ({ products }: CustomerPageProps) => {
   /** 검색어 설정 - Jotai 사용 */
   const { debouncedSearchTerm } = useSearch();
 
@@ -24,7 +21,7 @@ export const CustomerPage = ({ products, addToCart, getRemainingStock }: Custome
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-3">
-        <ProductGrid products={products} filteredProducts={filteredProducts} debouncedSearchTerm={debouncedSearchTerm} getRemainingStock={getRemainingStock} addToCart={addToCart} />
+        <ProductGrid products={products} filteredProducts={filteredProducts} debouncedSearchTerm={debouncedSearchTerm} />
       </div>
       <div className="lg:col-span-1">
         <CartSidebar />
