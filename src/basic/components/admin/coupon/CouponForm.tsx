@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from "react";
-import { Coupon } from "../../../types";
-import { couponHandlers, DISCOUNT_TYPE_OPTIONS, MAX_COUPON_CODE_LENGTH, MAX_COUPON_NAME_LENGTH } from "../../utils/couponUtils";
-import { useCouponFormHandlers } from "../../hooks/useCouponFormHandlers";
+import { Coupon } from "../../../../types";
+import { useCouponFormHandlers } from "../../../hooks/useCouponFormHandlers";
+import { couponHandlers, DISCOUNT_TYPE_OPTIONS, MAX_COUPON_CODE_LENGTH, MAX_COUPON_NAME_LENGTH } from "../../../utils/couponUtils";
 
 interface ICouponFormProps {
   addCoupon: (coupon: Coupon) => void;

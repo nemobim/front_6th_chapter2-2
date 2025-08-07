@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Coupon } from "../../types";
 import AdminNavigation from "../components/admin/AdminNavigation";
-import CouponManager from "../components/coupon/CouponManager";
-import ProductManager from "../components/procuct/ProductManager";
+import CouponManager from "../components/admin/coupon/CouponManager";
 import { TActiveTab } from "../constants/adminConstants";
 import { NewProductForm, ProductWithUI } from "../types/product";
+import ProductManager from "../components/admin/product/ProductManager";
 
 interface AdminDashboardProps {
   // 상품 관련

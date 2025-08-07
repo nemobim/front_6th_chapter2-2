@@ -1,6 +1,6 @@
-import { Coupon } from "../../../types";
-import { useCouponForm } from "../../hooks/useCouponForm";
-import { AddIcon } from "../elements/Icons";
+import { Coupon } from "../../../../types";
+import { useCouponForm } from "../../../hooks/useCouponForm";
+import { AddIcon } from "../../elements/Icons";
 import CouponCard from "./CouponCard";
 import CouponForm from "./CouponForm";
 

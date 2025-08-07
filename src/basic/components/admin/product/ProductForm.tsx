@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
-import { useProductFormHandlers } from "../../hooks/useProductFormHandlers";
-import { NewProductForm } from "../../types/product";
-import { MAX_DESCRIPTION_LENGTH, MAX_PRODUCT_NAME_LENGTH } from "../../utils/productUtils";
+import { NewProductForm } from "../../../types/product";
+import { useProductFormHandlers } from "../../../hooks/useProductFormHandlers";
+import { MAX_DESCRIPTION_LENGTH, MAX_PRODUCT_NAME_LENGTH } from "../../../utils/productUtils";
 
 interface IProductFormProps {
   productForm: NewProductForm;

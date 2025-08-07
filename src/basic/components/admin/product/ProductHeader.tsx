@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
-import { NewProductForm } from "../../types/product";
-import { INITIAL_PRODUCT_FORM } from "../../utils/productUtils";
+import { NewProductForm } from "../../../types/product";
+import { INITIAL_PRODUCT_FORM } from "../../../utils/productUtils";
 
 interface IProductHeaderProps {
   setEditingProduct: Dispatch<SetStateAction<string | null>>;

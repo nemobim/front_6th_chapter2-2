@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { NewProductForm, ProductWithUI } from "../../types/product";
+import { NewProductForm, ProductWithUI } from "../../../types/product";
 import ProductForm from "./ProductForm";
 import ProductHeader from "./ProductHeader";
 import ProductTable from "./ProductTable";

@@ -1,5 +1,5 @@
-import { Coupon } from "../../../types";
-import { DeleteIcon } from "../elements/Icons";
+import { Coupon } from "../../../../types";
+import { DeleteIcon } from "../../elements/Icons";
 
 interface ICouponCardProps {
   coupon: Coupon;

@@ -1,5 +1,5 @@
-import { ProductWithUI } from "../../types/product";
-import { formatPrice, getStockStatusStyle, PRODUCT_TABLE_HEADERS } from "../../utils/productUtils";
+import { ProductWithUI } from "../../../types/product";
+import { formatPrice, getStockStatusStyle, PRODUCT_TABLE_HEADERS } from "../../../utils/productUtils";
 
 interface IProductTableProps {
   products: ProductWithUI[];
