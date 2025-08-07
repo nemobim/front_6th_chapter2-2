@@ -1,8 +1,6 @@
 import { useAtom } from "jotai";
 import { couponsAtom } from "../../../atoms/couponAtoms";
-import { useCoupon } from "../../../hooks/useCoupon";
 import { useCouponForm } from "../../../hooks/useCouponForm";
-import { useCartTotals } from "../../../hooks/useCartTotals";
 import { AddIcon } from "../../elements/Icons";
 import CouponCard from "./CouponCard";
 import CouponForm from "./CouponForm";
@@ -10,12 +8,6 @@ import CouponForm from "./CouponForm";
 const CouponManager = () => {
   /** 쿠폰 목록 - Jotai 사용 */
   const [coupons] = useAtom(couponsAtom);
-
-  /** 장바구니 총액 계산 (쿠폰 관리용) */
-  const cartTotals = useCartTotals({ calculateItemTotal: () => 0 });
-
-  /** 쿠폰 관련 actions - useCoupon hook 사용 */
-  const { addCoupon, deleteCoupon } = useCoupon({ cartTotals });
 
   /** 쿠폰 등록 폼 hook 사용 */
   const { showCouponForm, setShowCouponForm } = useCouponForm();
@@ -29,7 +21,7 @@ const CouponManager = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* 쿠폰 카드 */}
           {coupons.map((coupon) => (
-            <CouponCard key={coupon.code} coupon={coupon} deleteCoupon={deleteCoupon} />
+            <CouponCard key={coupon.code} coupon={coupon} />
           ))}
 
           {/* 쿠폰 추가 버튼 */}
@@ -42,7 +34,7 @@ const CouponManager = () => {
         </div>
 
         {/* 쿠폰 등록 form */}
-        {showCouponForm && <CouponForm addCoupon={addCoupon} />}
+        {showCouponForm && <CouponForm />}
       </div>
     </section>
   );

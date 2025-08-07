@@ -1,12 +1,19 @@
+import { useCoupon } from "../../../hooks/useCoupon";
+import { useCartTotals } from "../../../hooks/useCartTotals";
 import { Coupon } from "../../../../types";
 import { DeleteIcon } from "../../elements/Icons";
 
 interface ICouponCardProps {
   coupon: Coupon;
-  deleteCoupon: (couponCode: string) => void;
 }
 
-const CouponCard = ({ coupon, deleteCoupon }: ICouponCardProps) => {
+const CouponCard = ({ coupon }: ICouponCardProps) => {
+  /** 장바구니 총액 계산 (쿠폰 관리용) */
+  const cartTotals = useCartTotals({ calculateItemTotal: () => 0 });
+
+  /** 쿠폰 관련 actions - useCoupon hook 사용 */
+  const { deleteCoupon } = useCoupon({ cartTotals });
+
   return (
     <div className="relative bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
       <div className="flex justify-between items-start">

@@ -1,16 +1,19 @@
 import { useMemo } from "react";
-import { Coupon } from "../../../../types";
+import { useCoupon } from "../../../hooks/useCoupon";
 import { useCouponForm } from "../../../hooks/useCouponForm";
 import { useCouponFormHandlers } from "../../../hooks/useCouponFormHandlers";
+import { useCartTotals } from "../../../hooks/useCartTotals";
 import { couponHandlers, DISCOUNT_TYPE_OPTIONS, MAX_COUPON_CODE_LENGTH, MAX_COUPON_NAME_LENGTH } from "../../../utils/couponUtils";
 
-interface ICouponFormProps {
-  addCoupon: (coupon: Coupon) => void;
-}
-
-const CouponForm = ({ addCoupon }: ICouponFormProps) => {
+const CouponForm = () => {
   /** 쿠폰 등록 폼 hook 사용 */
   const { setShowCouponForm, couponForm, setCouponForm, clearCouponForm } = useCouponForm();
+
+  /** 장바구니 총액 계산 (쿠폰 관리용) */
+  const cartTotals = useCartTotals({ calculateItemTotal: () => 0 });
+
+  /** 쿠폰 관련 actions - useCoupon hook 사용 */
+  const { addCoupon } = useCoupon({ cartTotals });
 
   /** 할인 타입에 따른 레이블과 플레이스홀더 설정 */
   const discountConfig = useMemo(() => couponHandlers.getDiscountConfig(couponForm.discountType), [couponForm.discountType]);
