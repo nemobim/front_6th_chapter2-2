@@ -14,6 +14,8 @@ interface UseCartTotalsProps {
 }
 
 export const useCartTotals = ({ cart, selectedCoupon, calculateItemTotal }: UseCartTotalsProps): CartTotals => {
+  const memoizedCalculateItemTotal = useMemo(() => (item: CartItem) => calculateItemTotal(item), [calculateItemTotal]);
+
   return useMemo(() => {
     // 기본 총액 계산
     const totals = cart.reduce(
@@ -21,7 +23,7 @@ export const useCartTotals = ({ cart, selectedCoupon, calculateItemTotal }: UseC
         // 기본 총액 계산
         const itemPrice = item.product.price * item.quantity;
         // 할인 적용 총액 계산
-        const itemTotal = calculateItemTotal(item);
+        const itemTotal = memoizedCalculateItemTotal(item);
 
         return {
           totalBeforeDiscount: acc.totalBeforeDiscount + itemPrice,
@@ -38,5 +40,5 @@ export const useCartTotals = ({ cart, selectedCoupon, calculateItemTotal }: UseC
       totalBeforeDiscount: Math.round(totals.totalBeforeDiscount),
       totalAfterDiscount: Math.round(finalTotalAfterDiscount),
     };
-  }, [cart, selectedCoupon, calculateItemTotal]);
+  }, [cart, selectedCoupon, memoizedCalculateItemTotal]);
 };
